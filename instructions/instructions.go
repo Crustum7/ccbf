@@ -1,45 +1,45 @@
-package interpreter
+package instructions
 
 import "fmt"
 
-func incPos(state *ProgramState) {
+func IncPos(state *ProgramState) {
 	state.pos++
 	state.AdjustCapacity()
 }
 
-func decPos(state *ProgramState) {
+func DecPos(state *ProgramState) {
 	state.pos--
 	if state.pos < 0 {
 		panic("Negative data pointer error")
 	}
 }
 
-func incVal(state *ProgramState) {
+func IncVal(state *ProgramState) {
 	state.data[state.pos]++
 }
 
-func decVal(state *ProgramState) {
+func DecVal(state *ProgramState) {
 	state.data[state.pos]--
 }
 
-func charOut(state *ProgramState) {
+func CharOut(state *ProgramState) {
 	fmt.Printf("%c", state.Value())
 }
 
-func charIn(state *ProgramState) {
+func CharIn(state *ProgramState) {
 	_, err := fmt.Scanf("%d", &state.data[state.pos])
 	if err != nil {
 		panic("Expected integer input")
 	}
 }
 
-func initIf(state *ProgramState, jumpLoc int) {
+func InitIf(state *ProgramState, jumpLoc int) {
 	if state.Value() == 0 {
 		state.programCounter = jumpLoc
 	}
 }
 
-func endIf(state *ProgramState, jumpLoc int) {
+func EndIf(state *ProgramState, jumpLoc int) {
 	if state.Value() != 0 {
 		state.programCounter = jumpLoc
 	}

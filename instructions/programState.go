@@ -1,4 +1,4 @@
-package interpreter
+package instructions
 
 type ProgramState struct {
 	pos            int
@@ -24,6 +24,14 @@ func (state *ProgramState) AdjustCapacity() {
 	}
 }
 
+func (state *ProgramState) IncrementProgramCounter() {
+	state.programCounter++
+}
+
+func (state *ProgramState) GetProgramCounter() int {
+	return state.programCounter
+}
+
 /*
 The initial program state contains the following:
 
@@ -31,7 +39,7 @@ instruction pointer index starting at 0
 program counter starting at 0
 32 data cells set to 0
 */
-func initProgramState() ProgramState {
+func InitProgramState() ProgramState {
 	var state ProgramState
 
 	state.pos = 0
