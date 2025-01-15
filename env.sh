@@ -1,0 +1,1 @@
+alias ccbf="go run ."
