@@ -1,1 +1,1 @@
-alias ccbf="go run ."
+alias ccbf="go run ./cli"
