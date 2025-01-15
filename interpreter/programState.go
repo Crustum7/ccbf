@@ -3,8 +3,6 @@ package interpreter
 type ProgramState struct {
 	pos            int
 	data           []int
-	ignore         int
-	stack          []int
 	programCounter int
 }
 
@@ -14,16 +12,6 @@ func (state *ProgramState) Value() int {
 
 func (state *ProgramState) Capacity() int {
 	return len(state.data)
-}
-
-func (state *ProgramState) NewIf(jumpLocation int) {
-	state.stack = append(state.stack, jumpLocation)
-}
-
-func (state *ProgramState) PopIf() int {
-	val := state.stack[len(state.stack)-1]
-	state.stack = state.stack[:len(state.stack)-1]
-	return val
 }
 
 func (state *ProgramState) AdjustCapacity() {
@@ -42,8 +30,6 @@ The initial program state contains the following:
 instruction pointer index starting at 0
 program counter starting at 0
 32 data cells set to 0
-ignore counter set to 0
-stack of jump locations for if-statements
 */
 func initProgramState() ProgramState {
 	var state ProgramState
@@ -53,8 +39,6 @@ func initProgramState() ProgramState {
 	for i := range state.data {
 		state.data[i] = 0
 	}
-	state.ignore = 0
-	state.stack = make([]int, 0)
 	state.programCounter = 0
 
 	return state

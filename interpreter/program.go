@@ -19,11 +19,47 @@ func runAll(programState *ProgramState, statements string) {
 		case ",":
 			charIn(programState)
 		case "[":
-			initIf(programState)
+			jumpLoc := findClosingBracket(statements, i)
+			initIf(programState, jumpLoc)
 		case "]":
-			endIf(programState)
+			jumpLoc := findOpeningBracket(statements, i) - 1
+			endIf(programState, jumpLoc)
 		}
 	}
+}
+
+func findOpeningBracket(statements string, start int) int {
+	counter := 0
+
+	for i := start; i >= 0; i-- {
+		switch string(statements[i]) {
+		case "]":
+			counter++
+		case "[":
+			counter--
+		}
+		if counter == 0 {
+			return i
+		}
+	}
+	panic("Could not find opening bracket")
+}
+
+func findClosingBracket(statements string, start int) int {
+	counter := 0
+
+	for i := start; i < len(statements); i++ {
+		switch string(statements[i]) {
+		case "[":
+			counter++
+		case "]":
+			counter--
+		}
+		if counter == 0 {
+			return i
+		}
+	}
+	panic("Could not find closing bracket")
 }
 
 func RunProgram(program string) {
