@@ -43,7 +43,7 @@ func charOut(state *ProgramState) {
 		return
 	}
 
-	fmt.Print(string(state.Value()))
+	fmt.Printf("%c", state.Value())
 }
 
 func charIn(state *ProgramState) {
@@ -51,13 +51,10 @@ func charIn(state *ProgramState) {
 		return
 	}
 
-	var i int
-	_, err := fmt.Scanf("%d", &i)
+	_, err := fmt.Scanf("%d", &state.data[state.pos])
 	if err != nil {
 		panic("Expected integer input")
 	}
-
-	state.data[state.pos] = i
 }
 
 /*
