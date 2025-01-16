@@ -1,36 +1,75 @@
 package compiler
 
-import "os"
+import (
+	"bytes"
+	"encoding/binary"
+	"os"
+)
 
 func dump(bytes []byte, outFileName string) {
 	os.WriteFile(outFileName, bytes, 0777)
 }
 
+func itob(value int32) ([]byte, error) {
+	buf := new(bytes.Buffer)
+	err := binary.Write(buf, binary.BigEndian, value)
+	if err != nil {
+		return nil, err
+	}
+	if len(buf.Bytes()) != 4 {
+		panic("Wrong length of byte slice produced by itob()")
+	}
+	return buf.Bytes(), nil
+}
+
 func CompileProgram(program string, outFileName string) {
-	bytes := make([]byte, 0)
+	data := make([]byte, 0)
+	jumpStack := make([]int, 0)
 
 	for i := 0; i < len(program); i++ {
 		command := string(program[i])
 
 		switch command {
 		case ">":
-			bytes = append(bytes, 0)
+			data = append(data, 0)
 		case "<":
-			bytes = append(bytes, 1)
+			data = append(data, 1)
 		case "+":
-			bytes = append(bytes, 2)
+			data = append(data, 2)
 		case "-":
-			bytes = append(bytes, 3)
+			data = append(data, 3)
 		case ".":
-			bytes = append(bytes, 4)
+			data = append(data, 4)
 		case ",":
-			bytes = append(bytes, 5)
+			data = append(data, 5)
 		case "[":
-			bytes = append(bytes, 6)
+			opPos := len(data)
+			jumpStack = append(jumpStack, opPos)
+
+			data = append(data, 6)
+			data = append(data, 0, 0, 0, 0)
 		case "]":
-			bytes = append(bytes, 7)
+			startOpPos := jumpStack[len(jumpStack)-1]
+			jumpStack = jumpStack[:len(jumpStack)-1]
+
+			endOpPos := len(data)
+			data = append(data, 7)
+
+			toAddress, err := itob(int32(startOpPos + 4))
+			if err != nil {
+				panic("Could not parse jump address to byte slice")
+			}
+			data = append(data, toAddress...)
+
+			backAddress, err := itob(int32(endOpPos + 4))
+			if err != nil {
+				panic("Could not parse jump address to byte slice")
+			}
+			for j := 0; j < 4; j++ {
+				data[startOpPos+1+j] = backAddress[j]
+			}
 		}
 	}
 
-	dump(bytes, outFileName)
+	dump(data, outFileName)
 }

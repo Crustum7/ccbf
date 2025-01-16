@@ -28,6 +28,10 @@ func (state *ProgramState) IncrementProgramCounter() {
 	state.programCounter++
 }
 
+func (state *ProgramState) IncreaseProgramCounter(steps int) {
+	state.programCounter += steps
+}
+
 func (state *ProgramState) GetProgramCounter() int {
 	return state.programCounter
 }

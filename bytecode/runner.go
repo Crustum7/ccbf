@@ -1,28 +1,71 @@
 package bytecode
 
-import "fmt"
+import (
+	"bytes"
+	"encoding/binary"
 
-func RunBytecode(bytes []byte) {
-	for i := 0; i < len(bytes); i++ {
+	"martinjonson.com/ccbf/instructions"
+)
+
+const addressSize = 4
+
+func btoi(data []byte) (int32, error) {
+	buf := bytes.NewReader(data)
+
+	var num int32
+	err := binary.Read(buf, binary.BigEndian, &num)
+	if err != nil {
+		return 0, err
+	}
+	return num, nil
+}
+
+func addressParameter(data []byte, opLoc int) []byte {
+	offset := opLoc + 1
+	return data[offset : offset+addressSize]
+}
+
+func runAll(state *instructions.ProgramState, bytes []byte) {
+	for i := 0; i < len(bytes); i = state.GetProgramCounter() {
 		command := bytes[i]
+		// op := []string{">", "<", "+", "-", ".", ",", "[", "]"}
+		// fmt.Print(op[command])
 
 		switch command {
 		case 0:
-			fmt.Print(">")
+			instructions.IncPos(state)
 		case 1:
-			fmt.Print("<")
+			instructions.DecPos(state)
 		case 2:
-			fmt.Print("+")
+			instructions.IncVal(state)
 		case 3:
-			fmt.Print("-")
+			instructions.DecVal(state)
 		case 4:
-			fmt.Print(".")
+			instructions.CharOut(state)
 		case 5:
-			fmt.Print(",")
+			instructions.CharIn(state)
 		case 6:
-			fmt.Print("[")
+			state.IncreaseProgramCounter(addressSize)
+			jumpLoc, err := btoi(addressParameter(bytes, i))
+			if err != nil {
+				panic(err)
+			}
+			instructions.InitIf(state, int(jumpLoc))
 		case 7:
-			fmt.Print("]")
+			state.IncreaseProgramCounter(addressSize)
+			jumpLoc, err := btoi(addressParameter(bytes, i))
+			if err != nil {
+				panic(err)
+			}
+			instructions.EndIf(state, int(jumpLoc))
 		}
+
+		state.IncrementProgramCounter()
 	}
+}
+
+func RunBytecode(bytes []byte) {
+	state := instructions.InitProgramState()
+
+	runAll(&state, bytes)
 }

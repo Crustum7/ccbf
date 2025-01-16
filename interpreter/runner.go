@@ -1,33 +1,36 @@
 package interpreter
 
-import "martinjonson.com/ccbf/instructions"
+import (
+	"martinjonson.com/ccbf/instructions"
+)
 
-func runAll(programState *instructions.ProgramState, statements string) {
-	for i := 0; i < len(statements); i = programState.GetProgramCounter() {
+func runAll(state *instructions.ProgramState, statements string) {
+	for i := 0; i < len(statements); i = state.GetProgramCounter() {
 		command := string(statements[i])
+		// fmt.Print(command)
 
 		switch command {
 		case ">":
-			instructions.IncPos(programState)
+			instructions.IncPos(state)
 		case "<":
-			instructions.DecPos(programState)
+			instructions.DecPos(state)
 		case "+":
-			instructions.IncVal(programState)
+			instructions.IncVal(state)
 		case "-":
-			instructions.DecVal(programState)
+			instructions.DecVal(state)
 		case ".":
-			instructions.CharOut(programState)
+			instructions.CharOut(state)
 		case ",":
-			instructions.CharIn(programState)
+			instructions.CharIn(state)
 		case "[":
 			jumpLoc := FindClosingBracket(statements, i)
-			instructions.InitIf(programState, jumpLoc)
+			instructions.InitIf(state, jumpLoc)
 		case "]":
 			jumpLoc := FindOpeningBracket(statements, i) - 1
-			instructions.EndIf(programState, jumpLoc)
+			instructions.EndIf(state, jumpLoc)
 		}
 
-		programState.IncrementProgramCounter()
+		state.IncrementProgramCounter()
 	}
 }
 
