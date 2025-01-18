@@ -3,11 +3,10 @@ package bytecode
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 
 	"martinjonson.com/ccbf/instructions"
 )
-
-const addressSize = 4
 
 func btoi(data []byte) (int32, error) {
 	buf := bytes.NewReader(data)
@@ -20,16 +19,23 @@ func btoi(data []byte) (int32, error) {
 	return num, nil
 }
 
-func addressParameter(data []byte, opLoc int) []byte {
+func parameter(data []byte, opLoc int, size int) []byte {
 	offset := opLoc + 1
-	return data[offset : offset+addressSize]
+	return data[offset : offset+size]
 }
 
 func runAll(state *instructions.ProgramState, bytes []byte) {
 	for i := 0; i < len(bytes); i = state.GetProgramCounter() {
-		command := bytes[i]
+		opCode := bytes[i]
+		operation := OperationForOpCode(opCode)
+		if operation == nil {
+			panic(fmt.Sprintf("Incorrect bytefile parse for op code %b", opCode))
+		}
 
-		switch command {
+		parameterBytes := parameter(bytes, i, operation.numberOfParameterBytes)
+		state.IncreaseProgramCounter(operation.numberOfParameterBytes)
+
+		switch opCode {
 		case 1:
 			instructions.IncPos(state)
 		case 2:
@@ -43,15 +49,13 @@ func runAll(state *instructions.ProgramState, bytes []byte) {
 		case 6:
 			instructions.CharIn(state)
 		case 7:
-			state.IncreaseProgramCounter(addressSize)
-			jumpLoc, err := btoi(addressParameter(bytes, i))
+			jumpLoc, err := btoi(parameterBytes)
 			if err != nil {
 				panic(err)
 			}
 			instructions.InitIf(state, int(jumpLoc))
 		case 8:
-			state.IncreaseProgramCounter(addressSize)
-			jumpLoc, err := btoi(addressParameter(bytes, i))
+			jumpLoc, err := btoi(parameterBytes)
 			if err != nil {
 				panic(err)
 			}

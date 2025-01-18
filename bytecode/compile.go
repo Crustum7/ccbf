@@ -33,6 +33,11 @@ func assignBytes(to []byte, from []byte) {
 	}
 }
 
+func parameterBytesForOperation(data []byte, opPos int, operation Operation) []byte {
+	offset := opPos + 1
+	return data[offset : offset+operation.numberOfParameterBytes]
+}
+
 func CompileProgram(program string, outFileName string) {
 	data := make([]byte, 0)
 	jumps := InitStack[int]()
@@ -54,18 +59,18 @@ func CompileProgram(program string, outFileName string) {
 		case "]":
 			startOpPos := jumps.Pop()
 
-			toAddress, err := itob(int32(startOpPos + 4))
+			toAddress, err := itob(int32(startOpPos + operation.numberOfParameterBytes))
 			if err != nil {
 				panic("Could not parse jump address to byte slice")
 			}
-			assignBytes(data[len(data)-addressSize:], toAddress)
+			assignBytes(parameterBytesForOperation(data, opPos, *operation), toAddress)
 
-			backAddress, err := itob(int32(opPos + 4))
+			backAddress, err := itob(int32(opPos + operation.numberOfParameterBytes))
 			if err != nil {
 				panic("Could not parse jump address to byte slice")
 			}
 
-			assignBytes(data[startOpPos+1:startOpPos+5], backAddress)
+			assignBytes(parameterBytesForOperation(data, startOpPos, *operation), backAddress)
 		}
 	}
 

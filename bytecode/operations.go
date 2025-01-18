@@ -30,3 +30,13 @@ func OperationForPattern(pattern string) *Operation {
 	}
 	return &operations[i]
 }
+
+func OperationForOpCode(opCode byte) *Operation {
+	i := slices.IndexFunc(operations, func(operation Operation) bool {
+		return opCode == operation.opCode
+	})
+	if i == -1 {
+		return nil
+	}
+	return &operations[i]
+}
