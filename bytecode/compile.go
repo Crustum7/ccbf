@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"os"
+	"slices"
 )
 
 func dump(bytes []byte, outFileName string) {
@@ -22,9 +23,19 @@ func itob(value int32) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+func assignBytes(to []byte, from []byte) {
+	if len(from) != len(to) {
+		panic("Number of bytes do not match")
+	}
+
+	for i := range len(to) {
+		to[i] = from[i]
+	}
+}
+
 func CompileProgram(program string, outFileName string) {
 	data := make([]byte, 0)
-	jumpStack := make([]int, 0)
+	jumps := InitStack[int]()
 
 	for i := 0; i < len(program); i++ {
 		command := string(program[i])
@@ -32,33 +43,29 @@ func CompileProgram(program string, outFileName string) {
 		if operation == nil {
 			continue
 		}
+
+		opPos := len(data)
 		data = append(data, operation.opCode)
+		data = append(data, slices.Repeat([]byte{0}, operation.numberOfParameterBytes)...)
 
 		switch command {
 		case "[":
-			opPos := len(data) - 1
-			jumpStack = append(jumpStack, opPos)
-
-			data = append(data, 0, 0, 0, 0)
+			jumps.Push(opPos)
 		case "]":
-			startOpPos := jumpStack[len(jumpStack)-1]
-			jumpStack = jumpStack[:len(jumpStack)-1]
-
-			endOpPos := len(data) - 1
+			startOpPos := jumps.Pop()
 
 			toAddress, err := itob(int32(startOpPos + 4))
 			if err != nil {
 				panic("Could not parse jump address to byte slice")
 			}
-			data = append(data, toAddress...)
+			assignBytes(data[len(data)-addressSize:], toAddress)
 
-			backAddress, err := itob(int32(endOpPos + 4))
+			backAddress, err := itob(int32(opPos + 4))
 			if err != nil {
 				panic("Could not parse jump address to byte slice")
 			}
-			for j := 0; j < 4; j++ {
-				data[startOpPos+1+j] = backAddress[j]
-			}
+
+			assignBytes(data[startOpPos+1:startOpPos+5], backAddress)
 		}
 	}
 

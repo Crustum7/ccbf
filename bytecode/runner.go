@@ -28,8 +28,6 @@ func addressParameter(data []byte, opLoc int) []byte {
 func runAll(state *instructions.ProgramState, bytes []byte) {
 	for i := 0; i < len(bytes); i = state.GetProgramCounter() {
 		command := bytes[i]
-		// op := []string{">", "<", "+", "-", ".", ",", "[", "]"}
-		// fmt.Print(op[command])
 
 		switch command {
 		case 1:
