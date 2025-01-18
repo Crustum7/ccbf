@@ -32,26 +32,26 @@ func runAll(state *instructions.ProgramState, bytes []byte) {
 		// fmt.Print(op[command])
 
 		switch command {
-		case 0:
-			instructions.IncPos(state)
 		case 1:
-			instructions.DecPos(state)
+			instructions.IncPos(state)
 		case 2:
-			instructions.IncVal(state)
+			instructions.DecPos(state)
 		case 3:
-			instructions.DecVal(state)
+			instructions.IncVal(state)
 		case 4:
-			instructions.CharOut(state)
+			instructions.DecVal(state)
 		case 5:
-			instructions.CharIn(state)
+			instructions.CharOut(state)
 		case 6:
+			instructions.CharIn(state)
+		case 7:
 			state.IncreaseProgramCounter(addressSize)
 			jumpLoc, err := btoi(addressParameter(bytes, i))
 			if err != nil {
 				panic(err)
 			}
 			instructions.InitIf(state, int(jumpLoc))
-		case 7:
+		case 8:
 			state.IncreaseProgramCounter(addressSize)
 			jumpLoc, err := btoi(addressParameter(bytes, i))
 			if err != nil {

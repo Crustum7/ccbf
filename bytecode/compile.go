@@ -28,32 +28,23 @@ func CompileProgram(program string, outFileName string) {
 
 	for i := 0; i < len(program); i++ {
 		command := string(program[i])
+		operation := OperationForPattern(command)
+		if operation == nil {
+			continue
+		}
+		data = append(data, operation.opCode)
 
 		switch command {
-		case ">":
-			data = append(data, 0)
-		case "<":
-			data = append(data, 1)
-		case "+":
-			data = append(data, 2)
-		case "-":
-			data = append(data, 3)
-		case ".":
-			data = append(data, 4)
-		case ",":
-			data = append(data, 5)
 		case "[":
-			opPos := len(data)
+			opPos := len(data) - 1
 			jumpStack = append(jumpStack, opPos)
 
-			data = append(data, 6)
 			data = append(data, 0, 0, 0, 0)
 		case "]":
 			startOpPos := jumpStack[len(jumpStack)-1]
 			jumpStack = jumpStack[:len(jumpStack)-1]
 
-			endOpPos := len(data)
-			data = append(data, 7)
+			endOpPos := len(data) - 1
 
 			toAddress, err := itob(int32(startOpPos + 4))
 			if err != nil {
