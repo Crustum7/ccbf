@@ -38,12 +38,29 @@ func parameterBytesForOperation(data []byte, opPos int, operation Operation) []b
 	return data[offset : offset+operation.numberOfParameterBytes]
 }
 
+func findRepeatingCommand(continuation string, command string) int {
+	if command != "+" {
+		return 1
+	}
+	for i, char := range continuation {
+		if string(char) != command {
+			return i
+		}
+	}
+	return len(continuation)
+}
+
 func CompileProgram(program string, outFileName string) {
 	data := make([]byte, 0)
 	jumps := InitStack[int]()
 
-	for i := 0; i < len(program); i++ {
+	for i := 0; i < len(program); {
 		command := string(program[i])
+		repetitions := findRepeatingCommand(program[i:], command)
+		i += repetitions
+		if repetitions > 1 {
+			command += command
+		}
 		operation := OperationForPattern(command)
 		if operation == nil {
 			continue
@@ -71,6 +88,8 @@ func CompileProgram(program string, outFileName string) {
 			}
 
 			assignBytes(parameterBytesForOperation(data, startOpPos, *operation), backAddress)
+		case "++":
+			assignBytes(parameterBytesForOperation(data, opPos, *operation), []byte{byte(repetitions)})
 		}
 	}
 

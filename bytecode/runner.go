@@ -8,15 +8,37 @@ import (
 	"martinjonson.com/ccbf/instructions"
 )
 
-func btoi(data []byte) (int32, error) {
-	buf := bytes.NewReader(data)
+func readInt8(buf *bytes.Reader) (int8, error) {
+	var num int8
+	err := binary.Read(buf, binary.BigEndian, &num)
+	return num, err
+}
 
+func readInt32(buf *bytes.Reader) (int32, error) {
 	var num int32
 	err := binary.Read(buf, binary.BigEndian, &num)
-	if err != nil {
-		return 0, err
+	return num, err
+}
+
+func btoi(data []byte, numberOfBytes int) (int, error) {
+	buf := bytes.NewReader(data)
+	var num int
+	var err error
+
+	switch numberOfBytes {
+	case 1:
+		num8, err8 := readInt8(buf)
+		num = int(num8)
+		err = err8
+	case 4:
+		num32, err32 := readInt32(buf)
+		num = int(num32)
+		err = err32
+	default:
+		panic(fmt.Sprintf("Number of bytes of %d not supported", numberOfBytes))
 	}
-	return num, nil
+
+	return num, err
 }
 
 func parameter(data []byte, opLoc int, size int) []byte {
@@ -49,17 +71,23 @@ func runAll(state *instructions.ProgramState, bytes []byte) {
 		case 6:
 			instructions.CharIn(state)
 		case 7:
-			jumpLoc, err := btoi(parameterBytes)
+			jumpLoc, err := btoi(parameterBytes, operation.numberOfParameterBytes)
 			if err != nil {
 				panic(err)
 			}
 			instructions.InitIf(state, int(jumpLoc))
 		case 8:
-			jumpLoc, err := btoi(parameterBytes)
+			jumpLoc, err := btoi(parameterBytes, operation.numberOfParameterBytes)
 			if err != nil {
 				panic(err)
 			}
 			instructions.EndIf(state, int(jumpLoc))
+		case 9:
+			repetitions, err := btoi(parameterBytes, operation.numberOfParameterBytes)
+			if err != nil {
+				panic(err)
+			}
+			instructions.IncValWith(state, int(repetitions))
 		}
 
 		state.IncrementProgramCounter()

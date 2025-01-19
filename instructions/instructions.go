@@ -18,6 +18,10 @@ func IncVal(state *ProgramState) {
 	state.data[state.pos]++
 }
 
+func IncValWith(state *ProgramState, change int) {
+	state.data[state.pos] += change
+}
+
 func DecVal(state *ProgramState) {
 	state.data[state.pos]--
 }
