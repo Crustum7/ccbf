@@ -7,6 +7,11 @@ func IncPos(state *ProgramState) {
 	state.AdjustCapacity()
 }
 
+func IncPosWith(state *ProgramState, change int) {
+	state.pos += change
+	state.AdjustCapacity()
+}
+
 func DecPos(state *ProgramState) {
 	state.pos--
 	if state.pos < 0 {
