@@ -26,6 +26,10 @@ func DecVal(state *ProgramState) {
 	state.data[state.pos]--
 }
 
+func DecValWith(state *ProgramState, change int) {
+	state.data[state.pos] -= change
+}
+
 func CharOut(state *ProgramState) {
 	fmt.Printf("%c", state.Value())
 }

@@ -39,9 +39,10 @@ func parameterBytesForOperation(data []byte, opPos int, operation Operation) []b
 }
 
 func findRepeatingCommand(continuation string, command string) int {
-	if command != "+" {
+	if !slices.Contains([]string{"+", "-"}, command) {
 		return 1
 	}
+
 	for i, char := range continuation {
 		if string(char) != command {
 			return i
@@ -89,6 +90,8 @@ func CompileProgram(program string, outFileName string) {
 
 			assignBytes(parameterBytesForOperation(data, startOpPos, *operation), backAddress)
 		case "++":
+			assignBytes(parameterBytesForOperation(data, opPos, *operation), []byte{byte(repetitions)})
+		case "--":
 			assignBytes(parameterBytesForOperation(data, opPos, *operation), []byte{byte(repetitions)})
 		}
 	}

@@ -88,6 +88,12 @@ func runAll(state *instructions.ProgramState, bytes []byte) {
 				panic(err)
 			}
 			instructions.IncValWith(state, int(repetitions))
+		case 10:
+			repetitions, err := btoi(parameterBytes, operation.numberOfParameterBytes)
+			if err != nil {
+				panic(err)
+			}
+			instructions.DecValWith(state, int(repetitions))
 		}
 
 		state.IncrementProgramCounter()
