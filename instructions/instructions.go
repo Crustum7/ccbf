@@ -13,7 +13,11 @@ func IncPosWith(state *ProgramState, change int) {
 }
 
 func DecPos(state *ProgramState) {
-	state.pos--
+	DecPosWith(state, 1)
+}
+
+func DecPosWith(state *ProgramState, change int) {
+	state.pos -= change
 	if state.pos < 0 {
 		panic("Negative data pointer error")
 	}
