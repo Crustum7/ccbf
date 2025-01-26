@@ -38,30 +38,21 @@ func parameterBytesForOperation(data []byte, opPos int, operation Operation) []b
 	return data[offset : offset+operation.numberOfParameterBytes]
 }
 
-func findRepeatingCommand(continuation string, command string) int {
-	if !slices.Contains([]string{"+", "-", ">", "<"}, command) {
-		return 1
-	}
-
-	for i, char := range continuation {
-		if string(char) != command {
-			return i
-		}
-	}
-	return len(continuation)
-}
-
 func CompileProgram(program string, outFileName string) {
 	data := make([]byte, 0)
 	jumps := InitStack[int]()
+	parser := InitCommandParser([]string{">", "<", "+", "-", ",", ".", "[", "]"})
 
 	for i := 0; i < len(program); {
-		command := string(program[i])
-		repetitions := findRepeatingCommand(program[i:], command)
-		i += repetitions
-		if repetitions > 1 {
+		command, repetitions := parser.FindPatternReapetions(program[i:])
+
+		if !slices.Contains([]string{"+", "-", ">", "<"}, command) {
+			repetitions = 1
+		} else if repetitions > 1 {
 			command += command
 		}
+		i += repetitions
+
 		operation := OperationForPattern(command)
 		if operation == nil {
 			continue
