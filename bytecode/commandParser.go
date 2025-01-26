@@ -66,6 +66,32 @@ func InitCommandParser(patterns []string) CommandParser {
 	return parser
 }
 
-func (parser *CommandParser) FindPattern(pattern string) string {
-	return parser.topNode.findPattern(pattern)
+func (parser *CommandParser) FindPattern(text string) string {
+	return parser.topNode.findPattern(text)
+}
+
+func (parser *CommandParser) FindPatternReapetions(text string) (string, int) {
+	pattern := parser.FindPattern(text)
+	if pattern == "" {
+		return "", 1
+	}
+
+	repetitionsAfterFirst := findRepetition(text[len(pattern):], pattern)
+	return pattern, repetitionsAfterFirst + 1
+}
+
+func findRepetition(text string, pattern string) int {
+	pattLen := len(pattern)
+	for i := 0; i < len(text); i++ {
+		offset := i * pattLen
+		if offset+pattLen > len(text) {
+			return i
+		}
+
+		comp := text[offset : offset+pattLen]
+		if pattern != comp {
+			return i
+		}
+	}
+	return len(text) / len(pattern)
 }
