@@ -1,5 +1,9 @@
 # Brainf*ck interpreter
 
+## Idea for command handling
+
+Every command has its own class that is initialized with number of repetitions. The class has a function returning bytecode produced by the command and number of source tokens have been processed.
+
 ## Bytecode
 
 |Operation|Description|Bytecode|Parameters|
