@@ -5,6 +5,8 @@ import (
 	"encoding/binary"
 	"os"
 	"slices"
+
+	"martinjonson.com/ccbf/byteoperation"
 )
 
 func dump(bytes []byte, outFileName string) {
@@ -45,13 +47,15 @@ func CompileProgram(program string, outFileName string) {
 
 	for i := 0; i < len(program); {
 		command, repetitions := parser.FindPatternReapetions(program[i:])
+		addedBytes, jumpLen := getBytesAndJump(command, repetitions)
 
-		if !slices.Contains([]string{"+", "-", ">", "<"}, command) {
-			repetitions = 1
-		} else if repetitions > 1 {
-			command += command
+		if jumpLen > 0 {
+			data = append(data, addedBytes...)
+			i += jumpLen
+			continue
 		}
-		i += repetitions
+
+		i++
 
 		operation := OperationForPattern(command)
 		if operation == nil {
@@ -80,16 +84,27 @@ func CompileProgram(program string, outFileName string) {
 			}
 
 			assignBytes(parameterBytesForOperation(data, startOpPos, *operation), backAddress)
-		case "++":
-			assignBytes(parameterBytesForOperation(data, opPos, *operation), []byte{byte(repetitions)})
-		case "--":
-			assignBytes(parameterBytesForOperation(data, opPos, *operation), []byte{byte(repetitions)})
-		case ">>":
-			assignBytes(parameterBytesForOperation(data, opPos, *operation), []byte{byte(repetitions)})
-		case "<<":
-			assignBytes(parameterBytesForOperation(data, opPos, *operation), []byte{byte(repetitions)})
 		}
 	}
 
 	dump(data, outFileName)
+}
+
+func getBytesAndJump(command string, repetitions int) ([]byte, int) {
+	switch command {
+	case ">":
+		return byteoperation.RightMove(repetitions)
+	case "<":
+		return byteoperation.LeftMove(repetitions)
+	case "+":
+		return byteoperation.Add(repetitions)
+	case "-":
+		return byteoperation.Sub(repetitions)
+	case ".":
+		return byteoperation.Print(repetitions)
+	case ",":
+		return byteoperation.Input(repetitions)
+	default:
+		return []byte{}, 0
+	}
 }
