@@ -1,44 +1,24 @@
 package bytecode
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 
 	"martinjonson.com/ccbf/instructions"
 )
 
-func readInt8(buf *bytes.Reader) (int8, error) {
-	var num int8
-	err := binary.Read(buf, binary.BigEndian, &num)
-	return num, err
-}
-
-func readInt32(buf *bytes.Reader) (int32, error) {
-	var num int32
-	err := binary.Read(buf, binary.BigEndian, &num)
-	return num, err
-}
-
-func btoi(data []byte, numberOfBytes int) (int, error) {
-	buf := bytes.NewReader(data)
+func btoi(data []byte, numberOfBytes int) int {
 	var num int
-	var err error
 
 	switch numberOfBytes {
 	case 1:
-		num8, err8 := readInt8(buf)
-		num = int(num8)
-		err = err8
+		num = int(data[0])
 	case 4:
-		num32, err32 := readInt32(buf)
-		num = int(num32)
-		err = err32
+		num = int(data[0])<<24 + int(data[1])<<16 + int(data[2])<<8 + int(data[3])
 	default:
 		panic(fmt.Sprintf("Number of bytes of %d not supported", numberOfBytes))
 	}
 
-	return num, err
+	return num
 }
 
 func parameter(data []byte, opLoc int, size int) []byte {
@@ -71,40 +51,28 @@ func runAll(state *instructions.ProgramState, bytes []byte) {
 		case 6:
 			instructions.CharIn(state)
 		case 7:
-			jumpLoc, err := btoi(parameterBytes, operation.numberOfParameterBytes)
-			if err != nil {
-				panic(err)
-			}
+			jumpLoc := btoi(parameterBytes, operation.numberOfParameterBytes)
+
 			instructions.InitIf(state, int(jumpLoc))
 		case 8:
-			jumpLoc, err := btoi(parameterBytes, operation.numberOfParameterBytes)
-			if err != nil {
-				panic(err)
-			}
+			jumpLoc := btoi(parameterBytes, operation.numberOfParameterBytes)
+
 			instructions.EndIf(state, int(jumpLoc))
 		case 9:
-			repetitions, err := btoi(parameterBytes, operation.numberOfParameterBytes)
-			if err != nil {
-				panic(err)
-			}
+			repetitions := btoi(parameterBytes, operation.numberOfParameterBytes)
+
 			instructions.IncValWith(state, int(repetitions))
 		case 10:
-			repetitions, err := btoi(parameterBytes, operation.numberOfParameterBytes)
-			if err != nil {
-				panic(err)
-			}
+			repetitions := btoi(parameterBytes, operation.numberOfParameterBytes)
+
 			instructions.DecValWith(state, int(repetitions))
 		case 11:
-			repetitions, err := btoi(parameterBytes, operation.numberOfParameterBytes)
-			if err != nil {
-				panic(err)
-			}
+			repetitions := btoi(parameterBytes, operation.numberOfParameterBytes)
+
 			instructions.IncPosWith(state, int(repetitions))
 		case 12:
-			repetitions, err := btoi(parameterBytes, operation.numberOfParameterBytes)
-			if err != nil {
-				panic(err)
-			}
+			repetitions := btoi(parameterBytes, operation.numberOfParameterBytes)
+
 			instructions.DecPosWith(state, int(repetitions))
 		case 13:
 			instructions.ResetAndStep(state)
