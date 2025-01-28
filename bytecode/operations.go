@@ -24,6 +24,7 @@ var operations = []Operation{
 	{pattern: ">>", opCode: 11, numberOfParameterBytes: 1},
 	{pattern: "<<", opCode: 12, numberOfParameterBytes: 1},
 	{pattern: "[-]>", opCode: 13, numberOfParameterBytes: 0},
+	{pattern: "[-]", opCode: 14, numberOfParameterBytes: 0},
 }
 
 func OperationForPattern(pattern string) *Operation {

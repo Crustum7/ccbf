@@ -108,6 +108,8 @@ func runAll(state *instructions.ProgramState, bytes []byte) {
 			instructions.DecPosWith(state, int(repetitions))
 		case 13:
 			instructions.ResetAndStep(state)
+		case 14:
+			instructions.Reset(state)
 		}
 
 		state.IncrementProgramCounter()

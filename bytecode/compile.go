@@ -43,7 +43,7 @@ func parameterBytesForOperation(data []byte, opPos int, operation Operation) []b
 func CompileProgram(program string, outFileName string) {
 	data := make([]byte, 0)
 	jumps := InitStack[int]()
-	parser := InitCommandParser([]string{">", "<", "+", "-", ",", ".", "[", "]", "[-]>"})
+	parser := InitCommandParser([]string{">", "<", "+", "-", ",", ".", "[", "]", "[-]>", "[-]"})
 
 	for i := 0; i < len(program); {
 		command, repetitions := parser.FindPatternReapetions(program[i:])
@@ -106,6 +106,8 @@ func getBytesAndJump(command string, repetitions int) ([]byte, int) {
 		return byteoperation.Input(repetitions)
 	case "[-]>":
 		return byteoperation.ResetAndStep(repetitions)
+	case "[-]":
+		return byteoperation.Reset(repetitions)
 	default:
 		return []byte{}, 0
 	}
