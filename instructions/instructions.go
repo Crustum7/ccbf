@@ -61,3 +61,9 @@ func EndIf(state *ProgramState, jumpLoc int) {
 		state.programCounter = jumpLoc
 	}
 }
+
+func ResetAndStep(state *ProgramState) {
+	state.data[state.pos] = 0
+	state.pos++
+	state.AdjustCapacity()
+}
