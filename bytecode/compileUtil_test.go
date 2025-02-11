@@ -38,6 +38,26 @@ func TestIntegerToByteArray(t *testing.T) {
 	}
 }
 
+func TestByteArrayToInt32(t *testing.T) {
+	expected := 16909060
+	number := btoi([]byte{1, 2, 3, 4})
+	if number != expected {
+		t.Fatalf("%d does not equal %d", number, expected)
+	}
+}
+
+func TestByteArrayToInt8(t *testing.T) {
+	expected := 123
+	number := btoi([]byte{123})
+	if number != expected {
+		t.Fatalf("%d does not equal %d", number, expected)
+	}
+}
+
+func TestByteArrayToInt16(t *testing.T) {
+	shouldPanic(t, func() { btoi([]byte{1, 2}) })
+}
+
 func TestAssignBytes(t *testing.T) {
 	from := []byte{1, 2, 3, 4}
 	to := []byte{0, 0, 0, 0}
