@@ -10,6 +10,12 @@ type Compiler struct {
 	parser    ProgramParser
 }
 
+type Command struct {
+	operation   Operation
+	repetitions int
+	opPos       int
+}
+
 func CompileProgram(program string, outFileName string) []byte {
 	compiler := Compiler{}
 	compiler.data = make([]byte, 0)
@@ -36,12 +42,6 @@ func (compiler *Compiler) handleCommand(command string, repetitions int) {
 		return
 	}
 	compiler.handleOperation(*operation, repetitions)
-}
-
-type Command struct {
-	operation   Operation
-	repetitions int
-	opPos       int
 }
 
 func (compiler *Compiler) handleOperation(operation Operation, repetitions int) {
@@ -83,39 +83,13 @@ func (compiler *Compiler) endLoop(command Command) {
 }
 
 func (compiler *Compiler) generalOperation(command Command) {
-	addedBytes, jumpLen := getBytesAndJump(command.operation, command.repetitions)
-
+	addedBytes := command.operation.standardParameterBytes(command.repetitions)
 	compiler.assignBytes(command.opPos, command.operation, addedBytes)
+
+	jumpLen := command.operation.ParsedSymbols(command.repetitions)
 	compiler.parser.skipRepetitions(jumpLen)
 }
 
 func (compiler *Compiler) assignBytes(opPos int, operation Operation, bytes []byte) {
 	assignBytes(parameterBytesForOperation(compiler.data, opPos, operation), bytes)
-}
-
-func getBytesAndJump(operation Operation, repetitions int) ([]byte, int) {
-	if operation.repeated {
-		return []byte{byte(repetitions)}, len(operation.pattern) * repetitions
-	}
-
-	return []byte{}, len(operation.pattern)
-}
-
-func itob(value int32) []byte {
-	return []byte{byte(value >> 24), byte(value >> 16), byte(value >> 8), byte(value)}
-}
-
-func assignBytes(to []byte, from []byte) {
-	if len(from) != len(to) {
-		panic("Number of bytes do not match")
-	}
-
-	for i := range len(to) {
-		to[i] = from[i]
-	}
-}
-
-func parameterBytesForOperation(data []byte, opPos int, operation Operation) []byte {
-	offset := opPos + 1
-	return data[offset : offset+operation.numberOfParameterBytes]
 }

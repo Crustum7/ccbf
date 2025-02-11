@@ -28,6 +28,22 @@ var operations = []Operation{
 	{pattern: "[-]", opCode: 14, repeated: false, numberOfParameterBytes: 0},
 }
 
+func (operation Operation) standardParameterBytes(repetitions int) []byte {
+	if operation.repeated {
+		return []byte{byte(repetitions)}
+	}
+
+	return []byte{}
+}
+
+func (operation Operation) ParsedSymbols(repetitions int) int {
+	if operation.repeated {
+		return len(operation.pattern) * repetitions
+	}
+
+	return len(operation.pattern)
+}
+
 func OperationForPattern(pattern string, repeated bool) *Operation {
 	i := slices.IndexFunc(operations, func(operation Operation) bool {
 		return pattern == operation.pattern && repeated == operation.repeated
