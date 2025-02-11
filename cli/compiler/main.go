@@ -14,9 +14,23 @@ func main() {
 
 	inFileName := args[0]
 	outFileName := args[1]
-	dat, err := os.ReadFile(inFileName)
+	runCompiler(inFileName, outFileName)
+}
+
+func runCompiler(inFileName string, outFileName string) {
+	code := read(inFileName)
+	bytecodeProgram := bytecode.CompileProgram(code, outFileName)
+	dump(bytecodeProgram, outFileName)
+}
+
+func read(fileName string) string {
+	contents, err := os.ReadFile(fileName)
 	if err != nil {
 		panic(err)
 	}
-	bytecode.CompileProgram(string(dat), outFileName)
+	return string(contents)
+}
+
+func dump(bytes []byte, fileName string) {
+	os.WriteFile(fileName, bytes, 0777)
 }
