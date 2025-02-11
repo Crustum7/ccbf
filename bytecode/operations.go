@@ -11,21 +11,41 @@ type Operation struct {
 	numberOfParameterBytes int
 }
 
+type OpCode int
+
+const (
+	Undefined OpCode = iota
+	OneRightStep
+	OneLeftStep
+	IncrementOne
+	DecrementOne
+	PrintChar
+	InputChar
+	StartLoop
+	EndLoop
+	IncrementMultiple
+	DecrementMultiple
+	MultipleRightStep
+	MultipleLeftStep
+	ResetAndStep
+	Reset
+)
+
 var operations = []Operation{
-	{pattern: ">", opCode: 1, repeated: false, numberOfParameterBytes: 0},
-	{pattern: "<", opCode: 2, repeated: false, numberOfParameterBytes: 0},
-	{pattern: "+", opCode: 3, repeated: false, numberOfParameterBytes: 0},
-	{pattern: "-", opCode: 4, repeated: false, numberOfParameterBytes: 0},
-	{pattern: ".", opCode: 5, repeated: false, numberOfParameterBytes: 0},
-	{pattern: ",", opCode: 6, repeated: false, numberOfParameterBytes: 0},
-	{pattern: "[", opCode: 7, repeated: false, numberOfParameterBytes: 4},
-	{pattern: "]", opCode: 8, repeated: false, numberOfParameterBytes: 4},
-	{pattern: "+", opCode: 9, repeated: true, numberOfParameterBytes: 1},
-	{pattern: "-", opCode: 10, repeated: true, numberOfParameterBytes: 1},
-	{pattern: ">", opCode: 11, repeated: true, numberOfParameterBytes: 1},
-	{pattern: "<", opCode: 12, repeated: true, numberOfParameterBytes: 1},
-	{pattern: "[-]>", opCode: 13, repeated: false, numberOfParameterBytes: 0},
-	{pattern: "[-]", opCode: 14, repeated: false, numberOfParameterBytes: 0},
+	{pattern: ">", opCode: byte(OneRightStep), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "<", opCode: byte(OneLeftStep), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "+", opCode: byte(IncrementOne), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "-", opCode: byte(DecrementOne), repeated: false, numberOfParameterBytes: 0},
+	{pattern: ".", opCode: byte(PrintChar), repeated: false, numberOfParameterBytes: 0},
+	{pattern: ",", opCode: byte(InputChar), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "[", opCode: byte(StartLoop), repeated: false, numberOfParameterBytes: 4},
+	{pattern: "]", opCode: byte(EndLoop), repeated: false, numberOfParameterBytes: 4},
+	{pattern: "+", opCode: byte(IncrementMultiple), repeated: true, numberOfParameterBytes: 1},
+	{pattern: "-", opCode: byte(DecrementMultiple), repeated: true, numberOfParameterBytes: 1},
+	{pattern: ">", opCode: byte(MultipleRightStep), repeated: true, numberOfParameterBytes: 1},
+	{pattern: "<", opCode: byte(MultipleLeftStep), repeated: true, numberOfParameterBytes: 1},
+	{pattern: "[-]>", opCode: byte(ResetAndStep), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "[-]", opCode: byte(Reset), repeated: false, numberOfParameterBytes: 0},
 }
 
 func (operation Operation) standardParameterBytes(repetitions int) []byte {

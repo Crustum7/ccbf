@@ -34,46 +34,46 @@ func parameter(data []byte, opLoc int, size int) []byte {
 }
 
 func matchInstruction(state *instructions.ProgramState, opCode byte, parameterBytes []byte) {
-	switch opCode {
-	case 1:
+	switch OpCode(opCode) {
+	case OneRightStep:
 		instructions.IncPos(state)
-	case 2:
+	case OneLeftStep:
 		instructions.DecPos(state)
-	case 3:
+	case IncrementOne:
 		instructions.IncVal(state)
-	case 4:
+	case DecrementOne:
 		instructions.DecVal(state)
-	case 5:
+	case PrintChar:
 		instructions.CharOut(state)
-	case 6:
+	case InputChar:
 		instructions.CharIn(state)
-	case 7:
+	case StartLoop:
 		jumpLoc := btoi(parameterBytes)
 
 		instructions.InitIf(state, int(jumpLoc))
-	case 8:
+	case EndLoop:
 		jumpLoc := btoi(parameterBytes)
 
 		instructions.EndIf(state, int(jumpLoc))
-	case 9:
+	case IncrementMultiple:
 		repetitions := btoi(parameterBytes)
 
 		instructions.IncValWith(state, int(repetitions))
-	case 10:
+	case DecrementMultiple:
 		repetitions := btoi(parameterBytes)
 
 		instructions.DecValWith(state, int(repetitions))
-	case 11:
+	case MultipleRightStep:
 		repetitions := btoi(parameterBytes)
 
 		instructions.IncPosWith(state, int(repetitions))
-	case 12:
+	case MultipleLeftStep:
 		repetitions := btoi(parameterBytes)
 
 		instructions.DecPosWith(state, int(repetitions))
-	case 13:
+	case ResetAndStep:
 		instructions.ResetAndStep(state)
-	case 14:
+	case Reset:
 		instructions.Reset(state)
 	}
 }
