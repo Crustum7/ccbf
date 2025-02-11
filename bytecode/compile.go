@@ -4,13 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"slices"
-
-	"martinjonson.com/ccbf/byteoperation"
 )
-
-// Compiler, ProgramParser, Command
-// Compiler has a program parser that delivers next command and bytes
-// Compiler creates a Command that has everything needed for add bytes to data
 
 type Compiler struct {
 	data      []byte
@@ -34,66 +28,86 @@ func CompileProgram(program string, outFileName string) []byte {
 func (compiler *Compiler) compile() {
 	for compiler.parser.hasNext() {
 		command, repetitions := compiler.parser.next()
-		operation := OperationForPattern(command, repetitions > 1)
-		if operation == nil {
-			continue
-		}
-
-		addedBytes, jumpLen := getBytesAndJump(command, repetitions)
-
-		if jumpLen > 0 {
-			compiler.data = append(compiler.data, addedBytes...)
-			compiler.parser.skipRepetitions(jumpLen)
-			continue
-		}
-
-		opPos := len(compiler.data)
-		compiler.data = append(compiler.data, operation.opCode)
-		compiler.data = append(compiler.data, slices.Repeat([]byte{0}, operation.numberOfParameterBytes)...)
-
-		switch command {
-		case "[":
-			compiler.jumpStack.Push(opPos)
-		case "]":
-			startOpPos := compiler.jumpStack.Pop()
-
-			toAddress, err := itob(int32(startOpPos + operation.numberOfParameterBytes))
-			if err != nil {
-				panic("Could not parse jump address to byte slice")
-			}
-			assignBytes(parameterBytesForOperation(compiler.data, opPos, *operation), toAddress)
-
-			backAddress, err := itob(int32(opPos + operation.numberOfParameterBytes))
-			if err != nil {
-				panic("Could not parse jump address to byte slice")
-			}
-
-			assignBytes(parameterBytesForOperation(compiler.data, startOpPos, *operation), backAddress)
-		}
+		compiler.handleCommand(command, repetitions)
 	}
 }
 
-func getBytesAndJump(command string, repetitions int) ([]byte, int) {
-	switch command {
-	case ">":
-		return byteoperation.RightMove(repetitions)
-	case "<":
-		return byteoperation.LeftMove(repetitions)
-	case "+":
-		return byteoperation.Add(repetitions)
-	case "-":
-		return byteoperation.Sub(repetitions)
-	case ".":
-		return byteoperation.Print(repetitions)
-	case ",":
-		return byteoperation.Input(repetitions)
-	case "[-]>":
-		return byteoperation.ResetAndStep(repetitions)
-	case "[-]":
-		return byteoperation.Reset(repetitions)
-	default:
-		return []byte{}, 0
+func (compiler *Compiler) handleCommand(command string, repetitions int) {
+	operation := OperationForPattern(command, repetitions > 1)
+	if operation == nil {
+		return
 	}
+	compiler.handleOperation(*operation, repetitions)
+}
+
+type Command struct {
+	operation   Operation
+	repetitions int
+	opPos       int
+}
+
+func (compiler *Compiler) handleOperation(operation Operation, repetitions int) {
+	opPos := len(compiler.data)
+	compiler.allocateOperation(operation)
+	command := Command{operation: operation, repetitions: repetitions, opPos: opPos}
+	compiler.matchPattern(operation.pattern, command)
+}
+
+func (compiler *Compiler) allocateOperation(operation Operation) {
+	compiler.data = append(compiler.data, operation.opCode)
+	compiler.data = append(compiler.data, slices.Repeat([]byte{0}, operation.numberOfParameterBytes)...)
+}
+
+func (compiler *Compiler) matchPattern(pattern string, command Command) {
+	switch pattern {
+	case "[":
+		compiler.startLoop(command)
+	case "]":
+		compiler.endLoop(command)
+	default:
+		compiler.generalOperation(command)
+	}
+}
+
+func (compiler *Compiler) startLoop(command Command) {
+	compiler.jumpStack.Push(command.opPos)
+}
+
+func (compiler *Compiler) endLoop(command Command) {
+	startOpPos := compiler.jumpStack.Pop()
+	parameterBytes := command.operation.numberOfParameterBytes
+
+	toAddress, err := itob(int32(startOpPos + parameterBytes))
+	if err != nil {
+		panic("Could not parse jump address to byte slice")
+	}
+	compiler.assignBytes(command.opPos, command.operation, toAddress)
+
+	backAddress, err := itob(int32(command.opPos + parameterBytes))
+	if err != nil {
+		panic("Could not parse jump address to byte slice")
+	}
+
+	compiler.assignBytes(startOpPos, command.operation, backAddress)
+}
+
+func (compiler *Compiler) generalOperation(command Command) {
+	addedBytes, jumpLen := getBytesAndJump(command.operation, command.repetitions)
+
+	compiler.assignBytes(command.opPos, command.operation, addedBytes)
+	compiler.parser.skipRepetitions(jumpLen)
+}
+
+func (compiler *Compiler) assignBytes(opPos int, operation Operation, bytes []byte) {
+	assignBytes(parameterBytesForOperation(compiler.data, opPos, operation), bytes)
+}
+
+func getBytesAndJump(operation Operation, repetitions int) ([]byte, int) {
+	if operation.repeated {
+		return []byte{byte(repetitions)}, len(operation.pattern) * repetitions
+	}
+
+	return []byte{}, len(operation.pattern)
 }
 
 // TODO: Refactor
