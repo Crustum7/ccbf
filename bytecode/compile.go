@@ -1,8 +1,6 @@
 package bytecode
 
 import (
-	"bytes"
-	"encoding/binary"
 	"slices"
 )
 
@@ -77,17 +75,10 @@ func (compiler *Compiler) endLoop(command Command) {
 	startOpPos := compiler.jumpStack.Pop()
 	parameterBytes := command.operation.numberOfParameterBytes
 
-	toAddress, err := itob(int32(startOpPos + parameterBytes))
-	if err != nil {
-		panic("Could not parse jump address to byte slice")
-	}
+	toAddress := itob(int32(startOpPos + parameterBytes))
 	compiler.assignBytes(command.opPos, command.operation, toAddress)
 
-	backAddress, err := itob(int32(command.opPos + parameterBytes))
-	if err != nil {
-		panic("Could not parse jump address to byte slice")
-	}
-
+	backAddress := itob(int32(command.opPos + parameterBytes))
 	compiler.assignBytes(startOpPos, command.operation, backAddress)
 }
 
@@ -110,17 +101,8 @@ func getBytesAndJump(operation Operation, repetitions int) ([]byte, int) {
 	return []byte{}, len(operation.pattern)
 }
 
-// TODO: Refactor
-func itob(value int32) ([]byte, error) {
-	buf := new(bytes.Buffer)
-	err := binary.Write(buf, binary.BigEndian, value)
-	if err != nil {
-		return nil, err
-	}
-	if len(buf.Bytes()) != 4 {
-		panic("Wrong length of byte slice produced by itob()")
-	}
-	return buf.Bytes(), nil
+func itob(value int32) []byte {
+	return []byte{byte(value >> 24), byte(value >> 16), byte(value >> 8), byte(value)}
 }
 
 func assignBytes(to []byte, from []byte) {
