@@ -44,6 +44,18 @@ func (operation Operation) ParsedSymbols(repetitions int) int {
 	return len(operation.pattern)
 }
 
+func OperationPatterns() []string {
+	unique := make(map[string]bool, 0)
+	for _, operation := range operations {
+		unique[operation.pattern] = true
+	}
+	patterns := make([]string, 0)
+	for pattern := range unique {
+		patterns = append(patterns, pattern)
+	}
+	return patterns
+}
+
 func OperationForPattern(pattern string, repeated bool) *Operation {
 	i := slices.IndexFunc(operations, func(operation Operation) bool {
 		return pattern == operation.pattern && repeated == operation.repeated

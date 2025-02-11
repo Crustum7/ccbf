@@ -19,7 +19,7 @@ func main() {
 
 func runCompiler(inFileName string, outFileName string) {
 	code := read(inFileName)
-	bytecodeProgram := bytecode.CompileProgram(code, outFileName)
+	bytecodeProgram := bytecode.CompileProgram(code)
 	dump(bytecodeProgram, outFileName)
 }
 

@@ -16,12 +16,12 @@ type Command struct {
 	opPos       int
 }
 
-func CompileProgram(program string, outFileName string) []byte {
+func CompileProgram(program string) []byte {
 	compiler := Compiler{}
 	compiler.data = make([]byte, 0)
 	compiler.jumpStack = InitStack[int]()
-	// TODO: Get from list of operations
-	commandParser := InitCommandParser([]string{">", "<", "+", "-", ",", ".", "[", "]", "[-]>", "[-]"})
+	patterns := OperationPatterns()
+	commandParser := InitCommandParser(patterns)
 	compiler.parser = InitProgramParser(program, commandParser)
 
 	compiler.compile()
