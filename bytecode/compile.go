@@ -34,16 +34,16 @@ func CompileProgram(program string, outFileName string) []byte {
 func (compiler *Compiler) compile() {
 	for compiler.parser.hasNext() {
 		command, repetitions := compiler.parser.next()
+		operation := OperationForPattern(command, repetitions > 1)
+		if operation == nil {
+			continue
+		}
+
 		addedBytes, jumpLen := getBytesAndJump(command, repetitions)
 
 		if jumpLen > 0 {
 			compiler.data = append(compiler.data, addedBytes...)
 			compiler.parser.skipRepetitions(jumpLen)
-			continue
-		}
-
-		operation := OperationForPattern(command)
-		if operation == nil {
 			continue
 		}
 

@@ -7,33 +7,42 @@ import (
 type Operation struct {
 	pattern                string
 	opCode                 byte
+	repeated               bool
 	numberOfParameterBytes int
 }
 
 var operations = []Operation{
-	{pattern: ">", opCode: 1, numberOfParameterBytes: 0},
-	{pattern: "<", opCode: 2, numberOfParameterBytes: 0},
-	{pattern: "+", opCode: 3, numberOfParameterBytes: 0},
-	{pattern: "-", opCode: 4, numberOfParameterBytes: 0},
-	{pattern: ".", opCode: 5, numberOfParameterBytes: 0},
-	{pattern: ",", opCode: 6, numberOfParameterBytes: 0},
-	{pattern: "[", opCode: 7, numberOfParameterBytes: 4},
-	{pattern: "]", opCode: 8, numberOfParameterBytes: 4},
-	{pattern: "++", opCode: 9, numberOfParameterBytes: 1},
-	{pattern: "--", opCode: 10, numberOfParameterBytes: 1},
-	{pattern: ">>", opCode: 11, numberOfParameterBytes: 1},
-	{pattern: "<<", opCode: 12, numberOfParameterBytes: 1},
-	{pattern: "[-]>", opCode: 13, numberOfParameterBytes: 0},
-	{pattern: "[-]", opCode: 14, numberOfParameterBytes: 0},
+	{pattern: ">", opCode: 1, repeated: false, numberOfParameterBytes: 0},
+	{pattern: "<", opCode: 2, repeated: false, numberOfParameterBytes: 0},
+	{pattern: "+", opCode: 3, repeated: false, numberOfParameterBytes: 0},
+	{pattern: "-", opCode: 4, repeated: false, numberOfParameterBytes: 0},
+	{pattern: ".", opCode: 5, repeated: false, numberOfParameterBytes: 0},
+	{pattern: ",", opCode: 6, repeated: false, numberOfParameterBytes: 0},
+	{pattern: "[", opCode: 7, repeated: false, numberOfParameterBytes: 4},
+	{pattern: "]", opCode: 8, repeated: false, numberOfParameterBytes: 4},
+	{pattern: "+", opCode: 9, repeated: true, numberOfParameterBytes: 1},
+	{pattern: "-", opCode: 10, repeated: true, numberOfParameterBytes: 1},
+	{pattern: ">", opCode: 11, repeated: true, numberOfParameterBytes: 1},
+	{pattern: "<", opCode: 12, repeated: true, numberOfParameterBytes: 1},
+	{pattern: "[-]>", opCode: 13, repeated: false, numberOfParameterBytes: 0},
+	{pattern: "[-]", opCode: 14, repeated: false, numberOfParameterBytes: 0},
 }
 
-func OperationForPattern(pattern string) *Operation {
+func OperationForPattern(pattern string, repeated bool) *Operation {
 	i := slices.IndexFunc(operations, func(operation Operation) bool {
-		return pattern == operation.pattern
+		return pattern == operation.pattern && repeated == operation.repeated
 	})
+
+	if i == -1 {
+		i = slices.IndexFunc(operations, func(operation Operation) bool {
+			return pattern == operation.pattern
+		})
+	}
+
 	if i == -1 {
 		return nil
 	}
+
 	return &operations[i]
 }
 
