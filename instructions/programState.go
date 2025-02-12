@@ -6,6 +6,8 @@ type ProgramState struct {
 	programCounter int
 }
 
+const INITIALCAPACITY = 32
+
 func (state *ProgramState) Value() int {
 	return state.data[state.pos]
 }
@@ -28,7 +30,7 @@ func (state *ProgramState) IncrementProgramCounter() {
 	state.programCounter++
 }
 
-func (state *ProgramState) IncreaseProgramCounter(steps int) {
+func (state *ProgramState) IncrementProgramCounterWith(steps int) {
 	state.programCounter += steps
 }
 
@@ -47,7 +49,7 @@ func InitProgramState() ProgramState {
 	var state ProgramState
 
 	state.pos = 0
-	state.data = make([]int, 32)
+	state.data = make([]int, INITIALCAPACITY)
 	for i := range state.data {
 		state.data[i] = 0
 	}

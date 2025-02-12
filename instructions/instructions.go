@@ -3,8 +3,7 @@ package instructions
 import "fmt"
 
 func IncPos(state *ProgramState) {
-	state.pos++
-	state.AdjustCapacity()
+	IncPosWith(state, 1)
 }
 
 func IncPosWith(state *ProgramState, change int) {

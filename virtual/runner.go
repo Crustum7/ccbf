@@ -24,7 +24,7 @@ func runAll(state *instructions.ProgramState, bytes []byte) {
 
 		byteCount := operation.GetParameterByteCount()
 		parameterBytes := parameter(bytes, i, byteCount)
-		state.IncreaseProgramCounter(byteCount)
+		state.IncrementProgramCounterWith(byteCount)
 		matchInstruction(state, opCode, parameterBytes)
 
 		state.IncrementProgramCounter()
