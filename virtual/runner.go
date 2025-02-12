@@ -1,10 +1,11 @@
-package compiler
+package virtual
 
 import (
 	"fmt"
 
 	"martinjonson.com/ccbf/instructions"
 	"martinjonson.com/ccbf/operations"
+	"martinjonson.com/ccbf/utils"
 )
 
 func RunBytecode(bytes []byte) {
@@ -50,27 +51,27 @@ func matchInstruction(state *instructions.ProgramState, opCode byte, parameterBy
 	case operations.InputChar:
 		instructions.CharIn(state)
 	case operations.StartLoop:
-		jumpLoc := btoi(parameterBytes)
+		jumpLoc := utils.Btoi(parameterBytes)
 
 		instructions.InitIf(state, int(jumpLoc))
 	case operations.EndLoop:
-		jumpLoc := btoi(parameterBytes)
+		jumpLoc := utils.Btoi(parameterBytes)
 
 		instructions.EndIf(state, int(jumpLoc))
 	case operations.IncrementMultiple:
-		repetitions := btoi(parameterBytes)
+		repetitions := utils.Btoi(parameterBytes)
 
 		instructions.IncValWith(state, int(repetitions))
 	case operations.DecrementMultiple:
-		repetitions := btoi(parameterBytes)
+		repetitions := utils.Btoi(parameterBytes)
 
 		instructions.DecValWith(state, int(repetitions))
 	case operations.MultipleRightStep:
-		repetitions := btoi(parameterBytes)
+		repetitions := utils.Btoi(parameterBytes)
 
 		instructions.IncPosWith(state, int(repetitions))
 	case operations.MultipleLeftStep:
-		repetitions := btoi(parameterBytes)
+		repetitions := utils.Btoi(parameterBytes)
 
 		instructions.DecPosWith(state, int(repetitions))
 	case operations.ResetAndStep:

@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"martinjonson.com/ccbf/compiler"
+	"martinjonson.com/ccbf/virtual"
 )
 
 func main() {
@@ -17,5 +17,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	compiler.RunBytecode(dat)
+	virtual.RunBytecode(dat)
 }

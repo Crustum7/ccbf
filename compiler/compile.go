@@ -78,10 +78,10 @@ func (compiler *Compiler) endLoop(command Command) {
 	startOpPos := compiler.jumpStack.Pop()
 	byteCount := command.operation.GetParameterByteCount()
 
-	toAddress := itob(int32(startOpPos + byteCount))
+	toAddress := utils.Itob(int32(startOpPos + byteCount))
 	compiler.assignBytes(command.opPos, command.operation, toAddress)
 
-	backAddress := itob(int32(command.opPos + byteCount))
+	backAddress := utils.Itob(int32(command.opPos + byteCount))
 	compiler.assignBytes(startOpPos, command.operation, backAddress)
 }
 
@@ -94,5 +94,11 @@ func (compiler *Compiler) generalOperation(command Command) {
 }
 
 func (compiler *Compiler) assignBytes(opPos int, operation operations.Operation, bytes []byte) {
-	assignBytes(parameterBytesForOperation(compiler.data, opPos, operation), bytes)
+	utils.AssignBytes(parameterBytesForOperation(compiler.data, opPos, operation), bytes)
+}
+
+func parameterBytesForOperation(data []byte, opPos int, operation operations.Operation) []byte {
+	offset := opPos + 1
+	byteCount := operation.GetParameterByteCount()
+	return data[offset : offset+byteCount]
 }
