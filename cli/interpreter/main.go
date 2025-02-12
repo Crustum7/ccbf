@@ -1,22 +1,36 @@
 package main
 
 import (
+	"flag"
 	"os"
 
+	"martinjonson.com/ccbf/compiler"
 	"martinjonson.com/ccbf/interpreter"
+	"martinjonson.com/ccbf/virtual"
 )
 
 func main() {
-	args := os.Args[1:]
+	bytecodePtr := flag.Bool("bytecode", false, "Compile to bytecode before running code")
+	flag.Parse()
+
+	args := flag.Args()
 	if len(args) == 0 {
 		panic("No file given")
 	}
 
 	for _, fileName := range args {
-		dat, err := os.ReadFile(fileName)
+		data, err := os.ReadFile(fileName)
 		if err != nil {
 			panic(err)
 		}
-		interpreter.RunProgram(string(dat))
+
+		program := string(data)
+
+		if *bytecodePtr {
+			compiledCode := compiler.CompileProgram(program)
+			virtual.RunBytecode(compiledCode)
+		} else {
+			interpreter.RunProgram(program)
+		}
 	}
 }
