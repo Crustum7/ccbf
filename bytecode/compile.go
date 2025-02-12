@@ -3,6 +3,7 @@ package bytecode
 import (
 	"slices"
 
+	"martinjonson.com/ccbf/operations"
 	"martinjonson.com/ccbf/utils"
 )
 
@@ -13,7 +14,7 @@ type Compiler struct {
 }
 
 type Command struct {
-	operation   Operation
+	operation   operations.Operation
 	repetitions int
 	opPos       int
 }
@@ -22,7 +23,7 @@ func CompileProgram(program string) []byte {
 	compiler := Compiler{}
 	compiler.data = make([]byte, 0)
 	compiler.jumpStack = utils.InitStack[int]()
-	patterns := OperationPatterns()
+	patterns := operations.OperationPatterns()
 	commandParser := InitCommandParser(patterns)
 	compiler.parser = InitProgramParser(program, commandParser)
 
@@ -39,23 +40,23 @@ func (compiler *Compiler) compile() {
 }
 
 func (compiler *Compiler) handleCommand(command string, repetitions int) {
-	operation := OperationForPattern(command, repetitions > 1)
+	operation := operations.OperationForPattern(command, repetitions > 1)
 	if operation == nil {
 		return
 	}
 	compiler.handleOperation(*operation, repetitions)
 }
 
-func (compiler *Compiler) handleOperation(operation Operation, repetitions int) {
+func (compiler *Compiler) handleOperation(operation operations.Operation, repetitions int) {
 	opPos := len(compiler.data)
 	compiler.allocateOperation(operation)
 	command := Command{operation: operation, repetitions: repetitions, opPos: opPos}
-	compiler.matchPattern(operation.pattern, command)
+	compiler.matchPattern(operation.GetPattern(), command)
 }
 
-func (compiler *Compiler) allocateOperation(operation Operation) {
-	compiler.data = append(compiler.data, operation.opCode)
-	compiler.data = append(compiler.data, slices.Repeat([]byte{0}, operation.numberOfParameterBytes)...)
+func (compiler *Compiler) allocateOperation(operation operations.Operation) {
+	compiler.data = append(compiler.data, operation.GetOpCode())
+	compiler.data = append(compiler.data, slices.Repeat([]byte{0}, operation.GetParameterByteCount())...)
 }
 
 func (compiler *Compiler) matchPattern(pattern string, command Command) {
@@ -75,23 +76,23 @@ func (compiler *Compiler) startLoop(command Command) {
 
 func (compiler *Compiler) endLoop(command Command) {
 	startOpPos := compiler.jumpStack.Pop()
-	parameterBytes := command.operation.numberOfParameterBytes
+	byteCount := command.operation.GetParameterByteCount()
 
-	toAddress := itob(int32(startOpPos + parameterBytes))
+	toAddress := itob(int32(startOpPos + byteCount))
 	compiler.assignBytes(command.opPos, command.operation, toAddress)
 
-	backAddress := itob(int32(command.opPos + parameterBytes))
+	backAddress := itob(int32(command.opPos + byteCount))
 	compiler.assignBytes(startOpPos, command.operation, backAddress)
 }
 
 func (compiler *Compiler) generalOperation(command Command) {
-	addedBytes := command.operation.standardParameterBytes(command.repetitions)
+	addedBytes := command.operation.StandardParameterBytes(command.repetitions)
 	compiler.assignBytes(command.opPos, command.operation, addedBytes)
 
 	jumpLen := command.operation.ParsedSymbols(command.repetitions)
 	compiler.parser.skipRepetitions(jumpLen)
 }
 
-func (compiler *Compiler) assignBytes(opPos int, operation Operation, bytes []byte) {
+func (compiler *Compiler) assignBytes(opPos int, operation operations.Operation, bytes []byte) {
 	assignBytes(parameterBytesForOperation(compiler.data, opPos, operation), bytes)
 }

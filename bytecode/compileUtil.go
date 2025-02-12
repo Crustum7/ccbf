@@ -1,6 +1,10 @@
 package bytecode
 
-import "fmt"
+import (
+	"fmt"
+
+	"martinjonson.com/ccbf/operations"
+)
 
 func itob(value int32) []byte {
 	return []byte{byte(value >> 24), byte(value >> 16), byte(value >> 8), byte(value)}
@@ -31,7 +35,8 @@ func assignBytes(to []byte, from []byte) {
 	}
 }
 
-func parameterBytesForOperation(data []byte, opPos int, operation Operation) []byte {
+func parameterBytesForOperation(data []byte, opPos int, operation operations.Operation) []byte {
 	offset := opPos + 1
-	return data[offset : offset+operation.numberOfParameterBytes]
+	byteCount := operation.GetParameterByteCount()
+	return data[offset : offset+byteCount]
 }

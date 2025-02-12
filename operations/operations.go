@@ -1,4 +1,4 @@
-package bytecode
+package operations
 
 import (
 	"slices"
@@ -48,7 +48,19 @@ var operations = []Operation{
 	{pattern: "[-]", opCode: byte(Reset), repeated: false, numberOfParameterBytes: 0},
 }
 
-func (operation Operation) standardParameterBytes(repetitions int) []byte {
+func (operation Operation) GetPattern() string {
+	return operation.pattern
+}
+
+func (operation Operation) GetOpCode() byte {
+	return operation.opCode
+}
+
+func (operation Operation) GetParameterByteCount() int {
+	return operation.numberOfParameterBytes
+}
+
+func (operation Operation) StandardParameterBytes(repetitions int) []byte {
 	if operation.repeated {
 		return []byte{byte(repetitions)}
 	}

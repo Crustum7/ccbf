@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"martinjonson.com/ccbf/instructions"
+	"martinjonson.com/ccbf/operations"
 )
 
 func RunBytecode(bytes []byte) {
@@ -15,13 +16,14 @@ func RunBytecode(bytes []byte) {
 func runAll(state *instructions.ProgramState, bytes []byte) {
 	for i := 0; i < len(bytes); i = state.GetProgramCounter() {
 		opCode := bytes[i]
-		operation := OperationForOpCode(opCode)
+		operation := operations.OperationForOpCode(opCode)
 		if operation == nil {
 			panic(fmt.Sprintf("Incorrect bytefile parse for op code %b", opCode))
 		}
 
-		parameterBytes := parameter(bytes, i, operation.numberOfParameterBytes)
-		state.IncreaseProgramCounter(operation.numberOfParameterBytes)
+		byteCount := operation.GetParameterByteCount()
+		parameterBytes := parameter(bytes, i, byteCount)
+		state.IncreaseProgramCounter(byteCount)
 		matchInstruction(state, opCode, parameterBytes)
 
 		state.IncrementProgramCounter()
@@ -34,46 +36,46 @@ func parameter(data []byte, opLoc int, size int) []byte {
 }
 
 func matchInstruction(state *instructions.ProgramState, opCode byte, parameterBytes []byte) {
-	switch OpCode(opCode) {
-	case OneRightStep:
+	switch operations.OpCode(opCode) {
+	case operations.OneRightStep:
 		instructions.IncPos(state)
-	case OneLeftStep:
+	case operations.OneLeftStep:
 		instructions.DecPos(state)
-	case IncrementOne:
+	case operations.IncrementOne:
 		instructions.IncVal(state)
-	case DecrementOne:
+	case operations.DecrementOne:
 		instructions.DecVal(state)
-	case PrintChar:
+	case operations.PrintChar:
 		instructions.CharOut(state)
-	case InputChar:
+	case operations.InputChar:
 		instructions.CharIn(state)
-	case StartLoop:
+	case operations.StartLoop:
 		jumpLoc := btoi(parameterBytes)
 
 		instructions.InitIf(state, int(jumpLoc))
-	case EndLoop:
+	case operations.EndLoop:
 		jumpLoc := btoi(parameterBytes)
 
 		instructions.EndIf(state, int(jumpLoc))
-	case IncrementMultiple:
+	case operations.IncrementMultiple:
 		repetitions := btoi(parameterBytes)
 
 		instructions.IncValWith(state, int(repetitions))
-	case DecrementMultiple:
+	case operations.DecrementMultiple:
 		repetitions := btoi(parameterBytes)
 
 		instructions.DecValWith(state, int(repetitions))
-	case MultipleRightStep:
+	case operations.MultipleRightStep:
 		repetitions := btoi(parameterBytes)
 
 		instructions.IncPosWith(state, int(repetitions))
-	case MultipleLeftStep:
+	case operations.MultipleLeftStep:
 		repetitions := btoi(parameterBytes)
 
 		instructions.DecPosWith(state, int(repetitions))
-	case ResetAndStep:
+	case operations.ResetAndStep:
 		instructions.ResetAndStep(state)
-	case Reset:
+	case operations.Reset:
 		instructions.Reset(state)
 	}
 }
