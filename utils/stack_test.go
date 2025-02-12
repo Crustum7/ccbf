@@ -1,6 +1,12 @@
-package bytecode
+package utils
 
 import "testing"
+
+func shouldPanic(t *testing.T, f func()) {
+	defer func() { recover() }()
+	f()
+	t.Errorf("Should have panicked")
+}
 
 func TestEmptyStack(t *testing.T) {
 	stack := InitStack[string]()

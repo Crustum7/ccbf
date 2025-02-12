@@ -1,4 +1,4 @@
-package bytecode
+package utils
 
 type Stack[T interface{}] struct {
 	data []T

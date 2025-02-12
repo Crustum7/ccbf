@@ -2,11 +2,13 @@ package bytecode
 
 import (
 	"slices"
+
+	"martinjonson.com/ccbf/utils"
 )
 
 type Compiler struct {
 	data      []byte
-	jumpStack Stack[int]
+	jumpStack utils.Stack[int]
 	parser    ProgramParser
 }
 
@@ -19,7 +21,7 @@ type Command struct {
 func CompileProgram(program string) []byte {
 	compiler := Compiler{}
 	compiler.data = make([]byte, 0)
-	compiler.jumpStack = InitStack[int]()
+	compiler.jumpStack = utils.InitStack[int]()
 	patterns := OperationPatterns()
 	commandParser := InitCommandParser(patterns)
 	compiler.parser = InitProgramParser(program, commandParser)
