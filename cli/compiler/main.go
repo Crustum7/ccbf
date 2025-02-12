@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"martinjonson.com/ccbf/bytecode"
+	"martinjonson.com/ccbf/compiler"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 
 func runCompiler(inFileName string, outFileName string) {
 	code := read(inFileName)
-	bytecodeProgram := bytecode.CompileProgram(code)
+	bytecodeProgram := compiler.CompileProgram(code)
 	dump(bytecodeProgram, outFileName)
 }
 

@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"martinjonson.com/ccbf/bytecode"
+	"martinjonson.com/ccbf/compiler"
 )
 
 func main() {
@@ -17,5 +17,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	bytecode.RunBytecode(dat)
+	compiler.RunBytecode(dat)
 }
