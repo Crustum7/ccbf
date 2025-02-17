@@ -52,6 +52,7 @@ func findOpeningBracket(statements string, start int) int {
 		case "[":
 			counter--
 		}
+
 		if counter == 0 {
 			return i
 		}
@@ -69,6 +70,7 @@ func findClosingBracket(statements string, start int) int {
 		case "]":
 			counter--
 		}
+
 		if counter == 0 {
 			return i
 		}
