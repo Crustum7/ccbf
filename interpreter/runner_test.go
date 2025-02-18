@@ -67,3 +67,10 @@ func TestFindClosingBracketPanic(t *testing.T) {
 
 	shouldPanic(t, func() { findClosingBracket(statements, openingPos) })
 }
+
+func ExampleRunProgram() {
+	program := "This is a test Brainf*ck script written for Coding Challenges!++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>++.>+.+++++++..+++.<<++++++++++++++.------------.>-----.>.-----------.+++++.+++++.-------.<<.>.>+.-------.+++++++++++..-------.+++++++++.-------.--.++++++++++++++. What does it do?"
+
+	RunProgram(program)
+	// Output: Hello, Coding Challenges
+}
