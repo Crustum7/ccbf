@@ -1,71 +1,57 @@
 package instructions
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func IncPos(state *ProgramState) {
-	IncPosWith(state, 1)
+func (program *Program) IncPosWith(change int) {
+	program.state.pos += change
+	program.state.AdjustCapacity()
 }
 
-func IncPosWith(state *ProgramState, change int) {
-	state.pos += change
-	state.AdjustCapacity()
-}
-
-func DecPos(state *ProgramState) {
-	DecPosWith(state, 1)
-}
-
-func DecPosWith(state *ProgramState, change int) {
-	state.pos -= change
-	if state.pos < 0 {
+func (program *Program) DecPosWith(change int) {
+	program.state.pos -= change
+	if program.state.pos < 0 {
 		panic("Negative data pointer error")
 	}
 }
 
-func IncVal(state *ProgramState) {
-	state.data[state.pos]++
+func (program *Program) IncValWith(change int) {
+	program.state.data[program.state.pos] += change
 }
 
-func IncValWith(state *ProgramState, change int) {
-	state.data[state.pos] += change
+func (program *Program) DecValWith(change int) {
+	program.state.data[program.state.pos] -= change
 }
 
-func DecVal(state *ProgramState) {
-	state.data[state.pos]--
+func (program *Program) CharOut() {
+	fmt.Fprintf(program.writer, "%c", program.state.Value())
 }
 
-func DecValWith(state *ProgramState, change int) {
-	state.data[state.pos] -= change
-}
-
-func CharOut(state *ProgramState) {
-	fmt.Printf("%c", state.Value())
-}
-
-func CharIn(state *ProgramState) {
-	_, err := fmt.Scanf("%d", &state.data[state.pos])
+func (program *Program) CharIn() {
+	_, err := fmt.Fscanf(program.reader, "%d", &program.state.data[program.state.pos])
 	if err != nil {
 		panic("Expected integer input")
 	}
 }
 
-func InitIf(state *ProgramState, jumpLoc int) {
-	if state.Value() == 0 {
-		state.programCounter = jumpLoc
+func (program *Program) InitIf(jumpLoc int) {
+	if program.state.Value() == 0 {
+		program.state.programCounter = jumpLoc
 	}
 }
 
-func EndIf(state *ProgramState, jumpLoc int) {
-	if state.Value() != 0 {
-		state.programCounter = jumpLoc
+func (program *Program) EndIf(jumpLoc int) {
+	if program.state.Value() != 0 {
+		program.state.programCounter = jumpLoc
 	}
 }
 
-func ResetAndStep(state *ProgramState) {
-	Reset(state)
-	IncPos(state)
+func (program *Program) ResetAndStep() {
+	program.Reset()
+	program.IncPosWith(1)
 }
 
-func Reset(state *ProgramState) {
-	state.data[state.pos] = 0
+func (program *Program) Reset() {
+	program.state.data[program.state.pos] = 0
 }

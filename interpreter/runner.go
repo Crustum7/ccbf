@@ -1,44 +1,46 @@
 package interpreter
 
 import (
+	"os"
+
 	"martinjonson.com/ccbf/instructions"
 )
 
-func RunProgram(program string) {
-	programState := instructions.InitProgramState()
+func RunProgram(commands string) {
+	program := instructions.InitProgram(os.Stdin, os.Stdout)
 
-	runAll(&programState, program)
+	runAll(&program, commands)
 }
 
-func runAll(state *instructions.ProgramState, statements string) {
-	for i := 0; i < len(statements); i = state.GetProgramCounter() {
-		runCommand(state, statements, i)
-		state.IncrementProgramCounter()
+func runAll(program *instructions.Program, statements string) {
+	for i := 0; i < len(statements); i = program.GetProgramCounter() {
+		runCommand(program, statements, i)
+		program.IncrementProgramCounter()
 	}
 }
 
-func runCommand(state *instructions.ProgramState, statements string, statementIndex int) {
+func runCommand(program *instructions.Program, statements string, statementIndex int) {
 	command := string(statements[statementIndex])
 
 	switch command {
 	case ">":
-		instructions.IncPos(state)
+		program.IncPosWith(1)
 	case "<":
-		instructions.DecPos(state)
+		program.DecPosWith(1)
 	case "+":
-		instructions.IncVal(state)
+		program.IncValWith(1)
 	case "-":
-		instructions.DecVal(state)
+		program.DecValWith(1)
 	case ".":
-		instructions.CharOut(state)
+		program.CharOut()
 	case ",":
-		instructions.CharIn(state)
+		program.CharIn()
 	case "[":
 		jumpLoc := findClosingBracket(statements, statementIndex)
-		instructions.InitIf(state, jumpLoc)
+		program.InitIf(jumpLoc)
 	case "]":
 		jumpLoc := findOpeningBracket(statements, statementIndex) - 1
-		instructions.EndIf(state, jumpLoc)
+		program.EndIf(jumpLoc)
 	}
 }
 

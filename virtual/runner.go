@@ -2,6 +2,7 @@ package virtual
 
 import (
 	"fmt"
+	"os"
 
 	"martinjonson.com/ccbf/instructions"
 	"martinjonson.com/ccbf/operations"
@@ -9,13 +10,13 @@ import (
 )
 
 func RunBytecode(bytes []byte) {
-	state := instructions.InitProgramState()
+	program := instructions.InitProgram(os.Stdin, os.Stdout)
 
-	runAll(&state, bytes)
+	runAll(&program, bytes)
 }
 
-func runAll(state *instructions.ProgramState, bytes []byte) {
-	for i := 0; i < len(bytes); i = state.GetProgramCounter() {
+func runAll(program *instructions.Program, bytes []byte) {
+	for i := 0; i < len(bytes); i = program.GetProgramCounter() {
 		opCode := bytes[i]
 		operation := operations.OperationForOpCode(opCode)
 		if operation == nil {
@@ -24,10 +25,10 @@ func runAll(state *instructions.ProgramState, bytes []byte) {
 
 		byteCount := operation.GetParameterByteCount()
 		parameterBytes := parameter(bytes, i, byteCount)
-		state.IncrementProgramCounterWith(byteCount)
-		matchInstruction(state, opCode, parameterBytes)
+		program.IncrementProgramCounterWith(byteCount)
+		matchInstruction(program, opCode, parameterBytes)
 
-		state.IncrementProgramCounter()
+		program.IncrementProgramCounter()
 	}
 }
 
@@ -36,47 +37,47 @@ func parameter(data []byte, opLoc int, size int) []byte {
 	return data[offset : offset+size]
 }
 
-func matchInstruction(state *instructions.ProgramState, opCode byte, parameterBytes []byte) {
+func matchInstruction(program *instructions.Program, opCode byte, parameterBytes []byte) {
 	switch operations.OpCode(opCode) {
 	case operations.OneRightStep:
-		instructions.IncPos(state)
+		program.IncPosWith(1)
 	case operations.OneLeftStep:
-		instructions.DecPos(state)
+		program.DecPosWith(1)
 	case operations.IncrementOne:
-		instructions.IncVal(state)
+		program.IncValWith(1)
 	case operations.DecrementOne:
-		instructions.DecVal(state)
+		program.DecValWith(1)
 	case operations.PrintChar:
-		instructions.CharOut(state)
+		program.CharOut()
 	case operations.InputChar:
-		instructions.CharIn(state)
+		program.CharIn()
 	case operations.StartLoop:
 		jumpLoc := utils.Btoi(parameterBytes)
 
-		instructions.InitIf(state, int(jumpLoc))
+		program.InitIf(int(jumpLoc))
 	case operations.EndLoop:
 		jumpLoc := utils.Btoi(parameterBytes)
 
-		instructions.EndIf(state, int(jumpLoc))
+		program.EndIf(int(jumpLoc))
 	case operations.IncrementMultiple:
 		repetitions := utils.Btoi(parameterBytes)
 
-		instructions.IncValWith(state, int(repetitions))
+		program.IncValWith(int(repetitions))
 	case operations.DecrementMultiple:
 		repetitions := utils.Btoi(parameterBytes)
 
-		instructions.DecValWith(state, int(repetitions))
+		program.DecValWith(int(repetitions))
 	case operations.MultipleRightStep:
 		repetitions := utils.Btoi(parameterBytes)
 
-		instructions.IncPosWith(state, int(repetitions))
+		program.IncPosWith(int(repetitions))
 	case operations.MultipleLeftStep:
 		repetitions := utils.Btoi(parameterBytes)
 
-		instructions.DecPosWith(state, int(repetitions))
+		program.DecPosWith(int(repetitions))
 	case operations.ResetAndStep:
-		instructions.ResetAndStep(state)
+		program.ResetAndStep()
 	case operations.Reset:
-		instructions.Reset(state)
+		program.Reset()
 	}
 }
