@@ -1,6 +1,7 @@
 package instructions
 
 import (
+	"bytes"
 	"os"
 	"testing"
 )
@@ -129,5 +130,41 @@ func TestResetAndStep(t *testing.T) {
 
 	if program.state.pos != initialPos+1 {
 		t.Fatal("ResetAndStep should have stepped")
+	}
+}
+
+func TestCharIn(t *testing.T) {
+	expectedVal := 63
+	input := "63"
+	buffer := bytes.NewBufferString(input)
+	program := InitProgram(buffer, os.Stdout)
+
+	program.CharIn()
+
+	val := program.state.Value()
+	if val != expectedVal {
+		t.Fatalf("Expected CharIn to take %d but took %d", expectedVal, val)
+	}
+}
+
+func TestCharInPanic(t *testing.T) {
+	input := "A"
+	buffer := bytes.NewBufferString(input)
+	program := InitProgram(buffer, os.Stdout)
+
+	shouldPanic(t, func() { program.CharIn() })
+}
+
+func TestCharOut(t *testing.T) {
+	var writer bytes.Buffer
+	program := InitProgram(os.Stdin, &writer)
+	program.state.data[program.state.pos] = 65
+	expectedChar := "A"
+
+	program.CharOut()
+
+	val := writer.String()
+	if val != expectedChar {
+		t.Fatalf("Expected CharOut to output %s but got %s", expectedChar, val)
 	}
 }
