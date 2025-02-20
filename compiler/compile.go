@@ -19,7 +19,8 @@ type Command struct {
 	opPos       int
 }
 
-func CompileProgram(program string, patterns []string) []byte {
+func CompileProgram(program string) []byte {
+	patterns := operations.OperationPatterns()
 	compiler := initCompiler(program, patterns)
 	compiler.compile()
 
