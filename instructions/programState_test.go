@@ -74,28 +74,3 @@ func TestInitProgramStateDataZero(t *testing.T) {
 		}
 	}
 }
-
-func TestIncrementProgramCounter(t *testing.T) {
-	state := InitProgramState(32)
-	initialPc := 5
-	state.programCounter = initialPc
-
-	state.IncrementProgramCounter()
-
-	if state.GetProgramCounter() != initialPc+1 {
-		t.Fatalf("Program counter should be %d after IncrementProgramCounter but was %d", initialPc+1, state.GetProgramCounter())
-	}
-}
-
-func TestIncrementProgramCounterWith(t *testing.T) {
-	state := InitProgramState(32)
-	initialPc := 5
-	step := 42
-	state.programCounter = initialPc
-
-	state.IncrementProgramCounterWith(step)
-
-	if state.GetProgramCounter() != initialPc+step {
-		t.Fatalf("Program counter should be %d after IncrementProgramCounter but was %d", initialPc+step, state.GetProgramCounter())
-	}
-}

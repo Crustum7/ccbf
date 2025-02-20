@@ -13,9 +13,10 @@ func RunProgram(commands string) {
 }
 
 func runAll(program *instructions.Program, statements string) {
-	for i := 0; i < len(statements); i = program.GetProgramCounter() {
+	pc := program.GetProgramCounter()
+	for i := 0; i < len(statements); i = pc.Get() {
 		runCommand(program, statements, i)
-		program.IncrementProgramCounter()
+		pc.Increment()
 	}
 }
 

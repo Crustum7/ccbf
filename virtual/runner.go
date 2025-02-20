@@ -16,7 +16,8 @@ func RunBytecode(bytes []byte) {
 }
 
 func runAll(program *instructions.Program, bytes []byte) {
-	for i := 0; i < len(bytes); i = program.GetProgramCounter() {
+	pc := program.GetProgramCounter()
+	for i := 0; i < len(bytes); i = pc.Get() {
 		opCode := bytes[i]
 		operation := operations.OperationForOpCode(opCode)
 		if operation == nil {
@@ -25,10 +26,10 @@ func runAll(program *instructions.Program, bytes []byte) {
 
 		byteCount := operation.GetParameterByteCount()
 		parameterBytes := parameter(bytes, i, byteCount)
-		program.IncrementProgramCounterWith(byteCount)
+		pc.IncrementWith(byteCount)
 		matchInstruction(program, opCode, parameterBytes)
 
-		program.IncrementProgramCounter()
+		pc.Increment()
 	}
 }
 

@@ -37,13 +37,13 @@ func (program *Program) CharIn() {
 
 func (program *Program) InitIf(jumpLoc int) {
 	if program.state.Value() == 0 {
-		program.state.programCounter = jumpLoc
+		program.pc.Set(jumpLoc)
 	}
 }
 
 func (program *Program) EndIf(jumpLoc int) {
 	if program.state.Value() != 0 {
-		program.state.programCounter = jumpLoc
+		program.pc.Set(jumpLoc)
 	}
 }
 

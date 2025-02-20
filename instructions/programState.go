@@ -1,9 +1,8 @@
 package instructions
 
 type ProgramState struct {
-	pos            int
-	data           []int
-	programCounter int
+	pos  int
+	data []int
 }
 
 func (state *ProgramState) Value() int {
@@ -24,23 +23,10 @@ func (state *ProgramState) AdjustCapacity() {
 	}
 }
 
-func (state *ProgramState) IncrementProgramCounter() {
-	state.programCounter++
-}
-
-func (state *ProgramState) IncrementProgramCounterWith(steps int) {
-	state.programCounter += steps
-}
-
-func (state *ProgramState) GetProgramCounter() int {
-	return state.programCounter
-}
-
 /*
 The initial program state contains the following:
 
 instruction pointer index starting at 0
-program counter starting at 0
 32 data cells set to 0
 */
 func InitProgramState(initialCapacity int) ProgramState {
@@ -51,7 +37,6 @@ func InitProgramState(initialCapacity int) ProgramState {
 	for i := range state.data {
 		state.data[i] = 0
 	}
-	state.programCounter = 0
 
 	return state
 }

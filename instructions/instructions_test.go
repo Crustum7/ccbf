@@ -49,57 +49,61 @@ func TestDecreaseValueWith(t *testing.T) {
 
 func TestInitIfJump(t *testing.T) {
 	program := StdProg()
-	program.state.programCounter = 0
+	pc := program.GetProgramCounter()
+	pc.Set(0)
 	program.state.data[program.state.pos] = 0
 	jumpLocation := 50
 
 	program.InitIf(jumpLocation)
 
-	pc := program.GetProgramCounter()
-	if pc != jumpLocation {
-		t.Fatalf("InitIf should have jumped to %d but program counter is %d", jumpLocation, pc)
+	pcVal := pc.Get()
+	if pcVal != jumpLocation {
+		t.Fatalf("InitIf should have jumped to %d but program counter is %d", jumpLocation, pcVal)
 	}
 }
 
 func TestInitIfNoJump(t *testing.T) {
 	program := StdProg()
 	initialPc := 0
-	program.state.programCounter = initialPc
+	pc := program.GetProgramCounter()
+	pc.Set(initialPc)
 	program.state.data[program.state.pos] = 123
 
 	program.InitIf(50)
 
-	pc := program.GetProgramCounter()
-	if pc != initialPc {
-		t.Fatalf("InitIf should have jumped to %d but program counter is %d", initialPc, pc)
+	pcVal := pc.Get()
+	if pcVal != initialPc {
+		t.Fatalf("InitIf should have jumped to %d but program counter is %d", initialPc, pcVal)
 	}
 }
 
 func TestEndIfJump(t *testing.T) {
 	program := StdProg()
-	program.state.programCounter = 0
+	pc := program.GetProgramCounter()
+	pc.Set(0)
 	jumpLocation := 50
 	program.state.data[program.state.pos] = 123
 
 	program.EndIf(jumpLocation)
 
-	pc := program.GetProgramCounter()
-	if pc != jumpLocation {
-		t.Fatalf("EndIf should have jumped to %d but program counter is %d", jumpLocation, pc)
+	pcVal := pc.Get()
+	if pcVal != jumpLocation {
+		t.Fatalf("EndIf should have jumped to %d but program counter is %d", jumpLocation, pcVal)
 	}
 }
 
 func TestEndIfNoJump(t *testing.T) {
 	program := StdProg()
 	initialPc := 0
-	program.state.programCounter = initialPc
+	pc := program.GetProgramCounter()
+	pc.Set(initialPc)
 	program.state.data[program.state.pos] = 0
 
 	program.EndIf(50)
 
-	pc := program.GetProgramCounter()
-	if pc != initialPc {
-		t.Fatalf("EndIf should have jumped to %d but program counter is %d", initialPc, pc)
+	pcVal := pc.Get()
+	if pcVal != initialPc {
+		t.Fatalf("EndIf should have jumped to %d but program counter is %d", initialPc, pcVal)
 	}
 }
 
