@@ -42,20 +42,3 @@ func TestByteArrayToInt8(t *testing.T) {
 func TestByteArrayToInt16(t *testing.T) {
 	test.ShouldPanic(t, func() { Btoi([]byte{1, 2}) })
 }
-
-func TestAssignBytes(t *testing.T) {
-	from := []byte{1, 2, 3, 4}
-	to := []byte{0, 0, 0, 0}
-
-	AssignBytes(to, from)
-	if !bytes.Equal(to, from) {
-		t.Fatalf("%d does not equal %d", to, from)
-	}
-}
-
-func TestAssignBytesWrongSize(t *testing.T) {
-	from := []byte{1, 2, 3, 4}
-	to := []byte{0, 0, 0}
-
-	test.ShouldPanic(t, func() { AssignBytes(to, from) })
-}

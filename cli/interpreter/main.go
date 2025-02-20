@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"martinjonson.com/ccbf/compiler"
+	"martinjonson.com/ccbf/operations"
 	"martinjonson.com/ccbf/virtual"
 )
 
@@ -33,6 +34,7 @@ func processFile(fileName string) {
 }
 
 func runProgram(code string) {
-	compiledCode := compiler.CompileProgram(code)
+	patterns := operations.OperationPatterns()
+	compiledCode := compiler.CompileProgram(code, patterns)
 	virtual.RunBytecode(compiledCode)
 }

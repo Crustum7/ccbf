@@ -22,13 +22,3 @@ func Btoi(data []byte) int {
 
 	return num
 }
-
-func AssignBytes(to []byte, from []byte) {
-	if len(from) != len(to) {
-		panic("Number of bytes do not match")
-	}
-
-	for i := range len(to) {
-		to[i] = from[i]
-	}
-}
