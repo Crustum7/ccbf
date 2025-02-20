@@ -1,25 +1,14 @@
 package utils
 
-import "testing"
-
-func isEqual(a []byte, b []byte) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	for i := 0; i < len(a); i++ {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-
-	return true
-}
+import (
+	"bytes"
+	"testing"
+)
 
 func TestIntegerToByteArraySmallestByte(t *testing.T) {
 	number := 123
 	byteArr := Itob(int32(number))
-	if !isEqual(byteArr, []byte{0, 0, 0, byte(number)}) {
+	if !bytes.Equal(byteArr, []byte{0, 0, 0, byte(number)}) {
 		t.Fatalf("%d does not equal %d", byteArr, number)
 	}
 }
@@ -27,7 +16,7 @@ func TestIntegerToByteArraySmallestByte(t *testing.T) {
 func TestIntegerToByteArray(t *testing.T) {
 	number := 16909060
 	byteArr := Itob(int32(number))
-	if !isEqual(byteArr, []byte{1, 2, 3, 4}) {
+	if !bytes.Equal(byteArr, []byte{1, 2, 3, 4}) {
 		t.Fatalf("%d does not equal %d", byteArr, number)
 	}
 }
@@ -57,7 +46,7 @@ func TestAssignBytes(t *testing.T) {
 	to := []byte{0, 0, 0, 0}
 
 	AssignBytes(to, from)
-	if !isEqual(to, from) {
+	if !bytes.Equal(to, from) {
 		t.Fatalf("%d does not equal %d", to, from)
 	}
 }
