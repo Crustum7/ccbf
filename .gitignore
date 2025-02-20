@@ -1,0 +1,8 @@
+# VS code
+.vscode/
+
+# bin
+bin/
+
+# Coverage reports
+*.out
