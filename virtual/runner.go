@@ -2,15 +2,15 @@ package virtual
 
 import (
 	"fmt"
-	"os"
+	"io"
 
 	"martinjonson.com/ccbf/instructions"
 	"martinjonson.com/ccbf/operations"
 	"martinjonson.com/ccbf/utils"
 )
 
-func RunBytecode(bytes []byte) {
-	program := instructions.InitProgram(os.Stdin, os.Stdout)
+func RunBytecode(bytes []byte, reader io.Reader, writer io.Writer) {
+	program := instructions.InitProgram(reader, writer)
 
 	runAll(&program, bytes)
 }

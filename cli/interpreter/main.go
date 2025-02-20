@@ -36,5 +36,5 @@ func processFile(fileName string) {
 func runProgram(code string) {
 	patterns := operations.OperationPatterns()
 	compiledCode := compiler.CompileProgram(code, patterns)
-	virtual.RunBytecode(compiledCode)
+	virtual.RunBytecode(compiledCode, os.Stdin, os.Stdout)
 }
