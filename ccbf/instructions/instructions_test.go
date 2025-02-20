@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"martinjonson.com/ccbf/test"
+	"martinjonson.com/ccbf/ccbf/test"
 )
 
 func StdProg() Program {
