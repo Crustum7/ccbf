@@ -23,12 +23,12 @@ func TestNegativePositionShouldPanic(t *testing.T) {
 
 func TestIncreaseValueWith(t *testing.T) {
 	program := StdProg()
-	initialValue := program.state.Value()
+	initialValue := program.state.getValue()
 	change := 42
 
 	program.IncValWith(change)
 
-	val := program.state.Value()
+	val := program.state.getValue()
 	if val != initialValue+change {
 		t.Fatalf("Value should be %d but was %d", initialValue+change, val)
 	}
@@ -36,12 +36,12 @@ func TestIncreaseValueWith(t *testing.T) {
 
 func TestDecreaseValueWith(t *testing.T) {
 	program := StdProg()
-	initialValue := program.state.Value()
+	initialValue := program.state.getValue()
 	change := 42
 
 	program.DecValWith(change)
 
-	val := program.state.Value()
+	val := program.state.getValue()
 	if val != initialValue-change {
 		t.Fatalf("Value should be %d but was %d", initialValue-change, val)
 	}
@@ -51,7 +51,7 @@ func TestInitIfJump(t *testing.T) {
 	program := StdProg()
 	pc := program.GetProgramCounter()
 	pc.Set(0)
-	program.state.data[program.state.pos] = 0
+	program.state.setValue(0)
 	jumpLocation := 50
 
 	program.InitIf(jumpLocation)
@@ -67,7 +67,7 @@ func TestInitIfNoJump(t *testing.T) {
 	initialPc := 0
 	pc := program.GetProgramCounter()
 	pc.Set(initialPc)
-	program.state.data[program.state.pos] = 123
+	program.state.setValue(123)
 
 	program.InitIf(50)
 
@@ -82,7 +82,7 @@ func TestEndIfJump(t *testing.T) {
 	pc := program.GetProgramCounter()
 	pc.Set(0)
 	jumpLocation := 50
-	program.state.data[program.state.pos] = 123
+	program.state.setValue(123)
 
 	program.EndIf(jumpLocation)
 
@@ -97,7 +97,7 @@ func TestEndIfNoJump(t *testing.T) {
 	initialPc := 0
 	pc := program.GetProgramCounter()
 	pc.Set(initialPc)
-	program.state.data[program.state.pos] = 0
+	program.state.setValue(0)
 
 	program.EndIf(50)
 
@@ -109,11 +109,11 @@ func TestEndIfNoJump(t *testing.T) {
 
 func TestReset(t *testing.T) {
 	program := StdProg()
-	program.state.data[program.state.pos] = 50
+	program.state.setValue(50)
 
 	program.Reset()
 
-	val := program.state.Value()
+	val := program.state.getValue()
 	if val != 0 {
 		t.Fatalf("Reset should have set value to 0 but set it to %d", val)
 	}
@@ -145,7 +145,7 @@ func TestCharIn(t *testing.T) {
 
 	program.CharIn()
 
-	val := program.state.Value()
+	val := program.state.getValue()
 	if val != expectedVal {
 		t.Fatalf("Expected CharIn to take %d but took %d", expectedVal, val)
 	}
@@ -162,7 +162,7 @@ func TestCharInPanic(t *testing.T) {
 func TestCharOut(t *testing.T) {
 	var writer bytes.Buffer
 	program := InitProgram(os.Stdin, &writer)
-	program.state.data[program.state.pos] = 65
+	program.state.setValue(65)
 	expectedChar := "A"
 
 	program.CharOut()

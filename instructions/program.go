@@ -15,7 +15,7 @@ type Program struct {
 const INITIALCAPACITY = 32
 
 func InitProgram(reader io.Reader, writer io.Writer) Program {
-	state := InitProgramState(INITIALCAPACITY)
+	state := initProgramState(INITIALCAPACITY)
 	pc := InitProgramCounter()
 	program := Program{state: state, reader: reader, writer: writer, pc: pc}
 
@@ -31,7 +31,8 @@ func (program *Program) write(char byte) {
 }
 
 func (program *Program) read() int {
-	val, err := fmt.Fscanf(program.reader, "%d")
+	var val int
+	_, err := fmt.Fscanf(program.reader, "%d", &val)
 	if err != nil {
 		panic("Expected integer input")
 	}

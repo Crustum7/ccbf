@@ -2,7 +2,7 @@ package instructions
 
 func (program *Program) IncPosWith(change int) {
 	program.state.pos += change
-	program.state.AdjustCapacity()
+	program.state.adjustCapacity()
 }
 
 func (program *Program) DecPosWith(change int) {
@@ -13,31 +13,33 @@ func (program *Program) DecPosWith(change int) {
 }
 
 func (program *Program) IncValWith(change int) {
-	program.state.data[program.state.pos] += change
+	prev := program.state.getValue()
+	program.state.setValue(prev + change)
 }
 
 func (program *Program) DecValWith(change int) {
-	program.state.data[program.state.pos] -= change
+	prev := program.state.getValue()
+	program.state.setValue(prev - change)
 }
 
 func (program *Program) CharOut() {
-	char := byte(program.state.Value())
+	char := byte(program.state.getValue())
 	program.write(char)
 }
 
 func (program *Program) CharIn() {
 	val := program.read()
-	program.state.data[program.state.pos] = val
+	program.state.setValue(val)
 }
 
 func (program *Program) InitIf(jumpLoc int) {
-	if program.state.Value() == 0 {
+	if program.state.getValue() == 0 {
 		program.pc.Set(jumpLoc)
 	}
 }
 
 func (program *Program) EndIf(jumpLoc int) {
-	if program.state.Value() != 0 {
+	if program.state.getValue() != 0 {
 		program.pc.Set(jumpLoc)
 	}
 }
@@ -48,5 +50,5 @@ func (program *Program) ResetAndStep() {
 }
 
 func (program *Program) Reset() {
-	program.state.data[program.state.pos] = 0
+	program.state.setValue(0)
 }

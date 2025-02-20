@@ -8,9 +8,9 @@ import (
 func TestInitProgramStateCapacity(t *testing.T) {
 	expectedCap := 32
 
-	state := InitProgramState(expectedCap)
+	state := initProgramState(expectedCap)
 
-	cap := state.Capacity()
+	cap := state.capacity()
 	if cap != expectedCap {
 		t.Fatalf("Program state should start with capacity %d, but started with %d", expectedCap, cap)
 	}
@@ -30,12 +30,12 @@ func TestAdjustedCapacity(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("initial capacity %d, position %d, expected capacity %d", tc.initialCapacity, tc.position, tc.expectedCapacity), func(t *testing.T) {
-			state := InitProgramState(tc.initialCapacity)
+			state := initProgramState(tc.initialCapacity)
 			state.pos = tc.position
 
-			state.AdjustCapacity()
+			state.adjustCapacity()
 
-			cap := state.Capacity()
+			cap := state.capacity()
 			if cap != tc.expectedCapacity {
 				t.Fatalf("Program state should have capacity %d, but has %d", tc.expectedCapacity, cap)
 			}
@@ -46,7 +46,7 @@ func TestAdjustedCapacity(t *testing.T) {
 func TestInitProgramStatePos(t *testing.T) {
 	expectedPos := 0
 
-	state := InitProgramState(32)
+	state := initProgramState(32)
 
 	pos := state.pos
 	if pos != expectedPos {
@@ -57,7 +57,7 @@ func TestInitProgramStatePos(t *testing.T) {
 func TestInitProgramStateProgramCounter(t *testing.T) {
 	expectedPc := 0
 
-	state := InitProgramState(32)
+	state := initProgramState(32)
 
 	pc := state.pos
 	if pc != expectedPc {
@@ -66,7 +66,7 @@ func TestInitProgramStateProgramCounter(t *testing.T) {
 }
 
 func TestInitProgramStateDataZero(t *testing.T) {
-	state := InitProgramState(32)
+	state := initProgramState(32)
 
 	for _, val := range state.data {
 		if val != 0 {
