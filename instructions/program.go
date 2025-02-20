@@ -1,6 +1,9 @@
 package instructions
 
-import "io"
+import (
+	"fmt"
+	"io"
+)
 
 type Program struct {
 	state  ProgramState
@@ -21,4 +24,16 @@ func InitProgram(reader io.Reader, writer io.Writer) Program {
 
 func (program *Program) GetProgramCounter() *ProgramCounter {
 	return &program.pc
+}
+
+func (program *Program) write(char byte) {
+	fmt.Fprintf(program.writer, "%c", char)
+}
+
+func (program *Program) read() int {
+	val, err := fmt.Fscanf(program.reader, "%d")
+	if err != nil {
+		panic("Expected integer input")
+	}
+	return val
 }

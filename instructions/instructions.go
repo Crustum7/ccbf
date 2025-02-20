@@ -1,9 +1,5 @@
 package instructions
 
-import (
-	"fmt"
-)
-
 func (program *Program) IncPosWith(change int) {
 	program.state.pos += change
 	program.state.AdjustCapacity()
@@ -25,14 +21,13 @@ func (program *Program) DecValWith(change int) {
 }
 
 func (program *Program) CharOut() {
-	fmt.Fprintf(program.writer, "%c", program.state.Value())
+	char := byte(program.state.Value())
+	program.write(char)
 }
 
 func (program *Program) CharIn() {
-	_, err := fmt.Fscanf(program.reader, "%d", &program.state.data[program.state.pos])
-	if err != nil {
-		panic("Expected integer input")
-	}
+	val := program.read()
+	program.state.data[program.state.pos] = val
 }
 
 func (program *Program) InitIf(jumpLoc int) {
