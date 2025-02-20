@@ -3,6 +3,8 @@ package utils
 import (
 	"bytes"
 	"testing"
+
+	"martinjonson.com/ccbf/test"
 )
 
 func TestIntegerToByteArraySmallestByte(t *testing.T) {
@@ -38,7 +40,7 @@ func TestByteArrayToInt8(t *testing.T) {
 }
 
 func TestByteArrayToInt16(t *testing.T) {
-	shouldPanic(t, func() { Btoi([]byte{1, 2}) })
+	test.ShouldPanic(t, func() { Btoi([]byte{1, 2}) })
 }
 
 func TestAssignBytes(t *testing.T) {
@@ -55,5 +57,5 @@ func TestAssignBytesWrongSize(t *testing.T) {
 	from := []byte{1, 2, 3, 4}
 	to := []byte{0, 0, 0}
 
-	shouldPanic(t, func() { AssignBytes(to, from) })
+	test.ShouldPanic(t, func() { AssignBytes(to, from) })
 }

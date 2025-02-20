@@ -2,13 +2,9 @@ package interpreter
 
 import (
 	"testing"
-)
 
-func shouldPanic(t *testing.T, f func()) {
-	defer func() { recover() }()
-	f()
-	t.Errorf("Should have panicked")
-}
+	"martinjonson.com/ccbf/test"
+)
 
 func TestFindOpeningBracket(t *testing.T) {
 	statements := "abcga[v9jvavv,k]ocvahckdhrea"
@@ -36,7 +32,7 @@ func TestFindOpeningBracketPanic(t *testing.T) {
 	statements := "abcga]v9jvavv,k]ocvahckdhrea"
 	closingPos := 15
 
-	shouldPanic(t, func() { findOpeningBracket(statements, closingPos) })
+	test.ShouldPanic(t, func() { findOpeningBracket(statements, closingPos) })
 }
 
 func TestFindClosingBracket(t *testing.T) {
@@ -65,7 +61,7 @@ func TestFindClosingBracketPanic(t *testing.T) {
 	statements := "abcga[v9jvavv,k[ocvahckdhrea"
 	openingPos := 5
 
-	shouldPanic(t, func() { findClosingBracket(statements, openingPos) })
+	test.ShouldPanic(t, func() { findClosingBracket(statements, openingPos) })
 }
 
 func ExampleRunProgram() {

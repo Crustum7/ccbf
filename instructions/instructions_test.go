@@ -4,13 +4,9 @@ import (
 	"bytes"
 	"os"
 	"testing"
-)
 
-func shouldPanic(t *testing.T, f func()) {
-	defer func() { recover() }()
-	f()
-	t.Errorf("Should have panicked")
-}
+	"martinjonson.com/ccbf/test"
+)
 
 func StdProg() Program {
 	return InitProgram(os.Stdin, os.Stdout)
@@ -18,7 +14,7 @@ func StdProg() Program {
 
 func TestNegativePositionShouldPanic(t *testing.T) {
 	program := StdProg()
-	shouldPanic(t, func() { program.DecPosWith(1) })
+	test.ShouldPanic(t, func() { program.DecPosWith(1) })
 }
 
 func TestIncreaseValueWith(t *testing.T) {
@@ -156,7 +152,7 @@ func TestCharInPanic(t *testing.T) {
 	buffer := bytes.NewBufferString(input)
 	program := InitProgram(buffer, os.Stdout)
 
-	shouldPanic(t, func() { program.CharIn() })
+	test.ShouldPanic(t, func() { program.CharIn() })
 }
 
 func TestCharOut(t *testing.T) {

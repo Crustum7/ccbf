@@ -1,12 +1,10 @@
 package utils
 
-import "testing"
+import (
+	"testing"
 
-func shouldPanic(t *testing.T, f func()) {
-	defer func() { recover() }()
-	f()
-	t.Errorf("Should have panicked")
-}
+	"martinjonson.com/ccbf/test"
+)
 
 func TestEmptyStack(t *testing.T) {
 	stack := InitStack[string]()
@@ -62,5 +60,5 @@ func TestMoreElements(t *testing.T) {
 
 func TestCrashIfEmptyPop(t *testing.T) {
 	stack := InitStack[string]()
-	shouldPanic(t, func() { stack.Pop() })
+	test.ShouldPanic(t, func() { stack.Pop() })
 }
