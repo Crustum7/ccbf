@@ -1,5 +1,27 @@
 # Brainf*ck interpreter
 
+This program is a Brainf*ck interpreter inspired by the [coding challenge](https://codingchallenges.fyi/challenges/challenge-brainfuck) created by John Crickett. The interpreter creates bytecode based on the Brainf\*ck program and runs the bytecode.
+
+## Usage
+
+Build the project by running:
+
+```bash
+go build -o bin/ccbf ./ccbf/cli/interpreter/main.go
+```
+
+Then use the interpreter on a bf file like:
+
+```bash
+./bin/ccbf examples/mandelbrot.bf
+```
+
+Or run directly without building:
+
+```bash
+go run ./ccbf/cli/interpreter/main.go examples/mandelbrot.bf
+```
+
 ## Bytecode instructions
 
 | Operation    | Description                                                       | Bytecode | Parameters    |
