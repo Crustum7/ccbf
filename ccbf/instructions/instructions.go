@@ -52,3 +52,8 @@ func (program *Program) ResetAndStep() {
 func (program *Program) Reset() {
 	program.state.setValue(0)
 }
+
+func (program *Program) MoveValueRight() {
+	program.state.data[program.state.pos+1] += program.state.getValue()
+	program.state.setValue(0)
+}

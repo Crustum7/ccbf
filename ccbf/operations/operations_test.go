@@ -101,7 +101,7 @@ func TestOperationForOpCode(t *testing.T) {
 }
 
 func TestOperationForOpCodeIncorrect(t *testing.T) {
-	testcases := []byte{0, 15}
+	testcases := []byte{0, 16}
 
 	for _, tc := range testcases {
 		t.Run(fmt.Sprintf("Incorrect %d", tc), func(t *testing.T) {

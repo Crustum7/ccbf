@@ -40,3 +40,4 @@ go run ./ccbf/cli/interpreter/main.go examples/mandelbrot.bf
 | < (repeated) | Move the pointer to the left as many steps as repetitions         | 12       | Repetitions   |
 | [-]>         | Reset memory cell and move pointer one step right                 | 13       |               |
 | [-]          | Reset memory cell                                                 | 14       |               |
+| [->+<]       | Move value to the right one step                                  | 15       |               |
