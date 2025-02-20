@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"martinjonson.com/ccbf/compiler"
-	"martinjonson.com/ccbf/virtual"
+	"martinjonson.com/ccbf/ccbf/compiler"
+	"martinjonson.com/ccbf/ccbf/interpreter"
 )
 
 func main() {
@@ -34,5 +34,5 @@ func processFile(fileName string) {
 
 func runProgram(code string) {
 	compiledCode := compiler.CompileProgram(code)
-	virtual.RunBytecode(compiledCode, os.Stdin, os.Stdout)
+	interpreter.RunBytecode(compiledCode, os.Stdin, os.Stdout)
 }

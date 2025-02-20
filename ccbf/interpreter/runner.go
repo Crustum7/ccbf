@@ -1,12 +1,12 @@
-package virtual
+package interpreter
 
 import (
 	"fmt"
 	"io"
 
-	"martinjonson.com/ccbf/instructions"
-	"martinjonson.com/ccbf/operations"
-	"martinjonson.com/ccbf/utils"
+	"martinjonson.com/ccbf/ccbf/instructions"
+	"martinjonson.com/ccbf/ccbf/operations"
+	"martinjonson.com/ccbf/ccbf/utils"
 )
 
 func RunBytecode(bytes []byte, reader io.Reader, writer io.Writer) {

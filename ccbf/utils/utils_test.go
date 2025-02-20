@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"martinjonson.com/ccbf/test"
+	"martinjonson.com/ccbf/ccbf/test"
 )
 
 func TestIntegerToByteArraySmallestByte(t *testing.T) {

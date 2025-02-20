@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"martinjonson.com/ccbf/test"
+	"martinjonson.com/ccbf/ccbf/test"
 )
 
 func TestEmptyStack(t *testing.T) {
