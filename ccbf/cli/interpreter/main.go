@@ -13,13 +13,7 @@ func main() {
 		panic("No file given")
 	}
 
-	processFiles(args)
-}
-
-func processFiles(fileNames []string) {
-	for _, fileName := range fileNames {
-		processFile(fileName)
-	}
+	processFile(args[0])
 }
 
 func processFile(fileName string) {
