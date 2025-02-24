@@ -35,19 +35,19 @@ const (
 var operations = []Operation{
 	{pattern: ">", opCode: byte(OneRightStep), repeated: false, numberOfParameterBytes: 0},
 	{pattern: "<", opCode: byte(OneLeftStep), repeated: false, numberOfParameterBytes: 0},
-	{pattern: "+", opCode: byte(IncrementOne), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "\\+", opCode: byte(IncrementOne), repeated: false, numberOfParameterBytes: 0},
 	{pattern: "-", opCode: byte(DecrementOne), repeated: false, numberOfParameterBytes: 0},
-	{pattern: ".", opCode: byte(PrintChar), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "\\.", opCode: byte(PrintChar), repeated: false, numberOfParameterBytes: 0},
 	{pattern: ",", opCode: byte(InputChar), repeated: false, numberOfParameterBytes: 0},
-	{pattern: "[", opCode: byte(StartLoop), repeated: false, numberOfParameterBytes: 4},
-	{pattern: "]", opCode: byte(EndLoop), repeated: false, numberOfParameterBytes: 4},
-	{pattern: "+", opCode: byte(IncrementMultiple), repeated: true, numberOfParameterBytes: 1},
-	{pattern: "-", opCode: byte(DecrementMultiple), repeated: true, numberOfParameterBytes: 1},
-	{pattern: ">", opCode: byte(MultipleRightStep), repeated: true, numberOfParameterBytes: 1},
-	{pattern: "<", opCode: byte(MultipleLeftStep), repeated: true, numberOfParameterBytes: 1},
-	{pattern: "[-]>", opCode: byte(ResetAndStep), repeated: false, numberOfParameterBytes: 0},
-	{pattern: "[-]", opCode: byte(Reset), repeated: false, numberOfParameterBytes: 0},
-	{pattern: "[->+<]", opCode: byte(MoveValueRight), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "\\[", opCode: byte(StartLoop), repeated: false, numberOfParameterBytes: 4},
+	{pattern: "\\]", opCode: byte(EndLoop), repeated: false, numberOfParameterBytes: 4},
+	{pattern: "\\++", opCode: byte(IncrementMultiple), repeated: true, numberOfParameterBytes: 1},
+	{pattern: "-+", opCode: byte(DecrementMultiple), repeated: true, numberOfParameterBytes: 1},
+	{pattern: ">+", opCode: byte(MultipleRightStep), repeated: true, numberOfParameterBytes: 1},
+	{pattern: "<+", opCode: byte(MultipleLeftStep), repeated: true, numberOfParameterBytes: 1},
+	{pattern: "\\[-\\]>", opCode: byte(ResetAndStep), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "\\[-\\]", opCode: byte(Reset), repeated: false, numberOfParameterBytes: 0},
+	{pattern: "\\[->\\+<\\]", opCode: byte(MoveValueRight), repeated: false, numberOfParameterBytes: 0},
 }
 
 func (operation Operation) GetPattern() string {
@@ -76,6 +76,10 @@ func (operation Operation) ParsedSymbols(repetitions int) int {
 	}
 
 	return len(operation.pattern)
+}
+
+func GetOperations() []Operation {
+	return operations
 }
 
 func OperationPatterns() []string {

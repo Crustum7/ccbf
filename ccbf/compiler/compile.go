@@ -21,17 +21,18 @@ type Command struct {
 
 func CompileProgram(program string) []byte {
 	patterns := operations.OperationPatterns()
-	compiler := initCompiler(program, patterns)
+	ops := operations.GetOperations()
+	compiler := initCompiler(program, patterns, ops)
 	compiler.compile()
 
 	return compiler.data
 }
 
-func initCompiler(program string, patterns []string) Compiler {
+func initCompiler(program string, patterns []string, ops []operations.Operation) Compiler {
 	compiler := Compiler{}
 	compiler.data = make([]byte, 0)
 	compiler.jumpStack = utils.InitStack[int]()
-	commandParser := InitCommandParser(patterns)
+	commandParser, _ := InitCommandParser2(patterns, ops)
 	compiler.parser = InitProgramParser(program, commandParser)
 
 	return compiler
@@ -39,17 +40,24 @@ func initCompiler(program string, patterns []string) Compiler {
 
 func (compiler *Compiler) compile() {
 	for compiler.parser.hasNext() {
-		command, repetitions := compiler.parser.next()
-		compiler.handleCommand(command, repetitions)
+		str, operation := compiler.parser.next()
+		if operation == nil {
+			continue
+		}
+
+		compiler.handleOperation(*operation)
 	}
 }
 
-func (compiler *Compiler) handleCommand(command string, repetitions int) {
-	operation := operations.OperationForPattern(command, repetitions > 1)
-	if operation == nil {
-		return
-	}
-	compiler.handleOperation(*operation, repetitions)
+func subpatternRepetitions(pattern string, str string) []int {
+	// Some operations behave differently based on number of subpattern repetitions
+	// \\++ for example: we need to find how many plus are found in a row
+	// \\[->+\\+<+\\]: we need to know how many steps the value is moved
+	// This is probably more of a regex problem and I should look up regex magic
+
+	// pattern + program -> string representation + operation + number of repetitions per "interesting" value
+
+	return []int{}
 }
 
 func (compiler *Compiler) handleOperation(operation operations.Operation, repetitions int) {
