@@ -10,7 +10,7 @@ Build the project by running:
 go build -o bin/ccbf ./ccbf/cli/interpreter/main.go
 ```
 
-Then use the interpreter on a bf file like:
+Then use the interpreter on a `.bf` file like:
 
 ```bash
 ./bin/ccbf examples/mandelbrot.bf
@@ -23,6 +23,8 @@ go run ./ccbf/cli/interpreter/main.go examples/mandelbrot.bf
 ```
 
 ## Bytecode instructions
+
+The following is a complete list of the supported operations and their bytecode representation.
 
 | Operation         | Description                                                       | Bytecode | Parameters      |
 | ----------------- | ----------------------------------------------------------------- | -------- | --------------- |
