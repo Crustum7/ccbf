@@ -1,7 +1,6 @@
 package operations_test
 
 import (
-	"bytes"
 	"fmt"
 	"testing"
 
@@ -29,16 +28,6 @@ func TestObjectMethods(t *testing.T) {
 			if byteCount != tc.byteCount {
 				t.Fatalf("Number of bytes should be %d but was %d", tc.byteCount, byteCount)
 			}
-
-			standardBytes := operation.StandardParameterBytes(tc.repetitions)
-			if !bytes.Equal(standardBytes, tc.standardBytes) {
-				t.Fatalf("Standard bytes should be %v but was %v", tc.standardBytes, standardBytes)
-			}
-
-			parsedSymbols := operation.ParsedSymbols(tc.repetitions)
-			if parsedSymbols != tc.parsedSymbols {
-				t.Fatalf("Number of parsed symbols should be %d but was %d", tc.parsedSymbols, parsedSymbols)
-			}
 		})
 	}
 }
@@ -48,47 +37,6 @@ func TestOperationPatterns(t *testing.T) {
 
 	if len(patterns) < 1 {
 		t.Fatal("OperationPatterns should return several patterns")
-	}
-}
-
-func TestOperationForPattern(t *testing.T) {
-	testcases := []struct {
-		pattern        string
-		repeated       bool
-		expectedOpCode byte
-	}{
-		{pattern: ">", repeated: false, expectedOpCode: 1},
-		{pattern: ">", repeated: true, expectedOpCode: 11},
-		{pattern: ",", repeated: false, expectedOpCode: 6},
-		{pattern: ",", repeated: true, expectedOpCode: 6},
-	}
-
-	for _, tc := range testcases {
-		operation := operations.OperationForPattern(tc.pattern, tc.repeated)
-
-		if operation.GetOpCode() != tc.expectedOpCode {
-			t.Fatalf("OperationForPattern should have returned operation with opcode %d for pattern %s and repeated %t", tc.expectedOpCode, tc.pattern, tc.repeated)
-		}
-	}
-}
-
-func TestOperationForPatternIncorrect(t *testing.T) {
-	testcases := []struct {
-		pattern  string
-		repeated bool
-	}{
-		{pattern: "a", repeated: false},
-		{pattern: "a", repeated: true},
-		{pattern: "b", repeated: false},
-		{pattern: "b", repeated: true},
-	}
-
-	for _, tc := range testcases {
-		operation := operations.OperationForPattern(tc.pattern, tc.repeated)
-
-		if operation != nil {
-			t.Fatalf("OperationForPattern should have returned nil operation for pattern %s and repeated %t", tc.pattern, tc.repeated)
-		}
 	}
 }
 

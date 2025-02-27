@@ -19,10 +19,10 @@ func (parser *ProgramParser) hasNext() bool {
 	return parser.index < len(parser.program)
 }
 
-func (parser *ProgramParser) next() (string, int) {
+func (parser *ProgramParser) next() ParsedCommand {
 	program := parser.program[parser.index:]
 	parser.index++
-	return parser.commandParser.FindPatternReapetions(program)
+	return parser.commandParser.FindLongest(program)
 }
 
 func (parser *ProgramParser) skipRepetitions(repetitions int) {

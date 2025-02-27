@@ -1,39 +1,96 @@
-package compiler
+package compiler_test
 
-import "testing"
+import (
+	"fmt"
+	"testing"
 
-func testFindPattern(t *testing.T, parser CommandParser, text string, expectedPattern string) {
-	pattern := parser.FindPattern(text)
-	if pattern != expectedPattern {
-		t.Fatalf("FindPatterns should have returned \"%s\", but resturned \"%s\" instead, with input \"%s\"", expectedPattern, pattern, text)
-	}
-}
-
-func testFindPatternRepetitions(t *testing.T, parser CommandParser, text string, expectedPattern string, expectedRepetions int) {
-	pattern, repetitions := parser.FindPatternReapetions(text)
-	if pattern != expectedPattern {
-		t.Fatalf("FindPatterns should have returned \"%s\", but resturned \"%s\" instead, with input \"%s\"", expectedPattern, pattern, text)
-	}
-	if repetitions != expectedRepetions {
-		t.Fatalf("FindPatterns should have matched pattern \"%s\" %d times, but only found %d for input \"%s\"", pattern, repetitions, expectedRepetions, expectedPattern)
-	}
-}
+	"martinjonson.com/ccbf/ccbf/compiler"
+	"martinjonson.com/ccbf/ccbf/operations"
+)
 
 func TestCommandParser(t *testing.T) {
-	patterns := []string{">", "<", "<<", "<.."}
-	parser := InitCommandParser(patterns)
+	testcases := []struct {
+		commands        []string
+		ops             []operations.Operation
+		feed            string
+		expectedPattern string
+		expectedMatch   string
+		expectedGroups  []string
+	}{
+		{
+			commands:        []string{">"},
+			feed:            "abcde",
+			expectedPattern: "",
+			expectedMatch:   "",
+		},
+		{
+			commands:        []string{">"},
+			feed:            "abcde",
+			expectedPattern: "",
+			expectedMatch:   "",
+		},
+		{
+			commands:        []string{">"},
+			feed:            ">>>>",
+			expectedPattern: ">",
+			expectedMatch:   ">",
+		},
+		{
+			commands:        []string{">"},
+			feed:            "a>>>>",
+			expectedPattern: "",
+			expectedMatch:   "",
+		},
+		{
+			commands:        []string{`\+`},
+			feed:            "++++",
+			expectedPattern: `\+`,
+			expectedMatch:   "+",
+		},
+		{
+			commands:        []string{`\++`},
+			feed:            "++++",
+			expectedPattern: `\++`,
+			expectedMatch:   "++++",
+		},
+		{
+			commands:        []string{`\[-(>+)\+(<+)\]`},
+			feed:            "[->>+<<]",
+			expectedPattern: `\[-(>+)\+(<+)\]`,
+			expectedMatch:   "[->>+<<]",
+			expectedGroups:  []string{">>", "<<"},
+		},
+		{
+			commands:        []string{">", ">>", ">"},
+			feed:            ">>",
+			expectedPattern: ">>",
+			expectedMatch:   ">>",
+		},
+	}
 
-	testFindPattern(t, parser, "", "")
-	testFindPattern(t, parser, ">", ">")
-	testFindPattern(t, parser, ">.", ">")
-	testFindPattern(t, parser, "<>", "<")
-	testFindPattern(t, parser, "<<<", "<<")
-	testFindPattern(t, parser, "<<<<", "<<")
-	testFindPattern(t, parser, "<.", "<")
-	testFindPattern(t, parser, "<...", "<..")
+	for _, tc := range testcases {
+		t.Run(fmt.Sprintf("%v, %s, %s", tc.commands, tc.feed, tc.expectedPattern), func(t *testing.T) {
+			parser := compiler.InitCommandParser(tc.commands, make([]operations.Operation, 5))
 
-	testFindPatternRepetitions(t, parser, "<..<...", "<..", 2)
-	testFindPatternRepetitions(t, parser, "<..<..", "<..", 2)
-	testFindPatternRepetitions(t, parser, "<<<<<<<<<", "<<", 4)
-	testFindPatternRepetitions(t, parser, ".", "", 1)
+			parsedCommand := parser.FindLongest(tc.feed)
+
+			if parsedCommand.Pattern != tc.expectedPattern {
+				t.Fatalf("FindLongest should have found %s but found %s", tc.expectedPattern, parsedCommand.Pattern)
+			}
+
+			if parsedCommand.Match != tc.expectedMatch {
+				t.Fatalf("FindLongest should have found match %s but found %s", tc.expectedMatch, parsedCommand.Match)
+			}
+
+			if len(parsedCommand.Groups) != len(tc.expectedGroups) {
+				t.Fatalf("FindLongest should have found groups %v but found %v", tc.expectedGroups, parsedCommand.Groups)
+			}
+
+			for i, group := range tc.expectedGroups {
+				if parsedCommand.Groups[i] != group {
+					t.Fatalf("FindLongest should have found groups %v but found %v", tc.expectedGroups, parsedCommand.Groups)
+				}
+			}
+		})
+	}
 }

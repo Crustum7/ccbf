@@ -1,87 +1,59 @@
 package compiler
 
+import (
+	"fmt"
+	"regexp"
+
+	"martinjonson.com/ccbf/ccbf/operations"
+	"martinjonson.com/ccbf/ccbf/utils"
+)
+
 type CommandParser struct {
-	topNode *commandNode
+	reMap utils.RegexMap[operations.Operation]
 }
 
-type commandNode struct {
-	final bool
-	next  map[byte]*commandNode
+type ParsedCommand struct {
+	Pattern   string
+	Match     string
+	Groups    []string
+	Operation *operations.Operation
 }
 
-func InitCommandParser(patterns []string) CommandParser {
-	var parser CommandParser
-	parser.topNode = &commandNode{final: false, next: make(map[byte]*commandNode)}
-
-	for _, pattern := range patterns {
-		parser.topNode.addPattern(pattern)
+func InitCommandParser(patterns []string, ops []operations.Operation) CommandParser {
+	m := make(map[string]operations.Operation)
+	for i := range patterns {
+		pattern := addStartAnchor(patterns[i])
+		m[pattern] = ops[i]
 	}
 
-	return parser
+	reMap := utils.InitRegexMap(m)
+	return CommandParser{reMap: reMap}
 }
 
-func (parser *CommandParser) FindPattern(text string) string {
-	return parser.topNode.findPattern(text)
+func addStartAnchor(str string) string {
+	return fmt.Sprintf("^%s", str)
 }
 
-func (parser *CommandParser) FindPatternReapetions(text string) (string, int) {
-	pattern := parser.FindPattern(text)
-	if pattern == "" {
-		return "", 1
+func (parser *CommandParser) FindLongest(feed string) ParsedCommand {
+	pattern := parser.reMap.FindLongestMatchPattern(feed)
+	operation := parser.reMap.GetValueFromPattern(pattern)
+	match, groups := getMatchAndGroups(feed, pattern)
+
+	if pattern != "" {
+		pattern = pattern[1:]
+	}
+	parsed := ParsedCommand{
+		Pattern:   pattern,
+		Operation: operation,
+		Match:     match,
+		Groups:    groups,
 	}
 
-	repetitionsAfterFirst := findRepetition(text[len(pattern):], pattern)
-	return pattern, repetitionsAfterFirst + 1
+	return parsed
 }
 
-func findRepetition(text string, pattern string) int {
-	pattLen := len(pattern)
-	for i := 0; i < len(text); i++ {
-		offset := i * pattLen
-		if offset+pattLen > len(text) {
-			return i
-		}
-
-		comp := text[offset : offset+pattLen]
-		if pattern != comp {
-			return i
-		}
-	}
-	return len(text) / len(pattern)
-}
-
-func (node *commandNode) findPattern(pattern string) string {
-	if pattern == "" {
-		return ""
-	}
-
-	char := pattern[0]
-	nextNode, nextExists := node.next[char]
-	if !nextExists {
-		return ""
-	}
-
-	nextPattern := nextNode.findPattern(pattern[1:])
-	patternFound := nextPattern != "" || nextNode.final
-	if patternFound {
-		return string(char) + nextPattern
-	}
-
-	return ""
-}
-
-func (node *commandNode) addPattern(pattern string) {
-	if len(pattern) < 1 {
-		node.final = true
-		return
-	}
-
-	char := pattern[0]
-	nextNode, nextExists := node.next[char]
-	if !nextExists {
-		node.next[char] = &commandNode{final: false, next: make(map[byte]*commandNode)}
-		nextNode = node.next[char]
-	}
-
-	nextNode.addPattern(pattern[1:])
+func getMatchAndGroups(str, pattern string) (string, []string) {
+	re := regexp.MustCompile(pattern)
+	match := re.FindStringSubmatch(str)
+	return match[0], match[1:]
 }
