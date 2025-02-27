@@ -14,9 +14,9 @@ type Compiler struct {
 }
 
 type Command struct {
-	operation   operations.Operation
-	repetitions int
-	opPos       int
+	operation     operations.Operation
+	parsedCommand ParsedCommand
+	opPos         int
 }
 
 func CompileProgram(program string) []byte {
@@ -32,7 +32,7 @@ func initCompiler(program string, patterns []string, ops []operations.Operation)
 	compiler := Compiler{}
 	compiler.data = make([]byte, 0)
 	compiler.jumpStack = utils.InitStack[int]()
-	commandParser, _ := InitCommandParser2(patterns, ops)
+	commandParser, _ := InitCommandParser(patterns, ops)
 	compiler.parser = InitProgramParser(program, commandParser)
 
 	return compiler
@@ -40,31 +40,21 @@ func initCompiler(program string, patterns []string, ops []operations.Operation)
 
 func (compiler *Compiler) compile() {
 	for compiler.parser.hasNext() {
-		str, operation := compiler.parser.next()
-		if operation == nil {
+		parsedCommand := compiler.parser.next()
+		if parsedCommand.Pattern == "" {
 			continue
 		}
 
-		compiler.handleOperation(*operation)
+		compiler.parser.skipRepetitions(len(parsedCommand.Match))
+		compiler.handleOperation(*parsedCommand.Operation, parsedCommand)
 	}
 }
 
-func subpatternRepetitions(pattern string, str string) []int {
-	// Some operations behave differently based on number of subpattern repetitions
-	// \\++ for example: we need to find how many plus are found in a row
-	// \\[->+\\+<+\\]: we need to know how many steps the value is moved
-	// This is probably more of a regex problem and I should look up regex magic
-
-	// pattern + program -> string representation + operation + number of repetitions per "interesting" value
-
-	return []int{}
-}
-
-func (compiler *Compiler) handleOperation(operation operations.Operation, repetitions int) {
+func (compiler *Compiler) handleOperation(operation operations.Operation, parsedCommand ParsedCommand) {
 	opPos := len(compiler.data)
 	compiler.allocateOperationSpace(operation)
 
-	command := Command{operation: operation, repetitions: repetitions, opPos: opPos}
+	command := Command{operation: operation, parsedCommand: parsedCommand, opPos: opPos}
 	compiler.matchPattern(operation.GetPattern(), command)
 }
 
@@ -75,9 +65,9 @@ func (compiler *Compiler) allocateOperationSpace(operation operations.Operation)
 
 func (compiler *Compiler) matchPattern(pattern string, command Command) {
 	switch pattern {
-	case "[":
+	case `\[`:
 		compiler.startLoop(command)
-	case "]":
+	case `\]`:
 		compiler.endLoop(command)
 	default:
 		compiler.generalOperation(command)
@@ -100,11 +90,11 @@ func (compiler *Compiler) endLoop(command Command) {
 }
 
 func (compiler *Compiler) generalOperation(command Command) {
-	addedBytes := command.operation.StandardParameterBytes(command.repetitions)
+	addedBytes := []byte{}
+	if len(command.parsedCommand.Groups) > 0 {
+		addedBytes = append(addedBytes, byte(len(command.parsedCommand.Groups[0])))
+	}
 	compiler.assignParameterBytes(command.opPos, addedBytes)
-
-	jumpLen := command.operation.ParsedSymbols(command.repetitions)
-	compiler.parser.skipRepetitions(jumpLen)
 }
 
 func (compiler *Compiler) assignParameterBytes(opPos int, from []byte) {

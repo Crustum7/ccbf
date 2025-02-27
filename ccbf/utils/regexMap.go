@@ -1,33 +1,51 @@
 package utils
 
-import "regexp"
+import (
+	"regexp"
+)
 
+// RegexMap is a simple map wrapper that makes it easy to find the
+// longest match and its corresponding value
 type RegexMap[T any] struct {
-	m map[*regexp.Regexp]T
+	m map[string]T
 }
 
 func InitRegexMap[T any](m map[string]T) (RegexMap[T], error) {
-	reMap := RegexMap[T]{m: make(map[*regexp.Regexp]T)}
+	reMap := RegexMap[T]{m: make(map[string]T)}
 	for key, val := range m {
-		regex, err := regexp.Compile(key)
+		_, err := regexp.Compile(key)
 		if err != nil {
 			return RegexMap[T]{}, err
 		}
 
-		reMap.m[regex] = val
+		reMap.m[key] = val
 	}
 	return reMap, nil
 }
 
-func (reMap RegexMap[T]) FindLongestMatch(str string) (string, *T) {
-	longest := []byte{}
-	var bestVal *T = nil
-	for key, val := range reMap.m {
-		match := key.Find([]byte(str))
-		if match != nil && len(match) > len(longest) {
+func (reMap RegexMap[T]) FindLongestMatchPattern(str string) string {
+	longest, bestRegex := "", ""
+
+	for key := range reMap.m {
+		re := regexp.MustCompile(key)
+		match := re.FindString(str)
+
+		shorterRegex := len(match) == len(longest) && len(key) < len(bestRegex)
+		longerMatch := len(match) > len(longest)
+		if longerMatch || shorterRegex {
 			longest = match
-			bestVal = &val
+			bestRegex = key
 		}
 	}
-	return string(longest), bestVal
+
+	return bestRegex
+}
+
+func (reMap RegexMap[T]) GetValueFromPattern(pattern string) *T {
+	value, wasRetrieved := reMap.m[pattern]
+	if !wasRetrieved {
+		return nil
+	}
+
+	return &value
 }

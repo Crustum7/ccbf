@@ -1,14 +1,12 @@
 package compiler
 
-import "martinjonson.com/ccbf/ccbf/operations"
-
 type ProgramParser struct {
 	program       string
 	index         int
-	commandParser CommandParser2
+	commandParser CommandParser
 }
 
-func InitProgramParser(program string, commandParser CommandParser2) ProgramParser {
+func InitProgramParser(program string, commandParser CommandParser) ProgramParser {
 	parser := ProgramParser{}
 	parser.program = program
 	parser.commandParser = commandParser
@@ -21,7 +19,7 @@ func (parser *ProgramParser) hasNext() bool {
 	return parser.index < len(parser.program)
 }
 
-func (parser *ProgramParser) next() (string, *operations.Operation) {
+func (parser *ProgramParser) next() ParsedCommand {
 	program := parser.program[parser.index:]
 	parser.index++
 	return parser.commandParser.FindLongest(program)
