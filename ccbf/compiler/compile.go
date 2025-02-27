@@ -32,7 +32,7 @@ func initCompiler(program string, patterns []string, ops []operations.Operation)
 	compiler := Compiler{}
 	compiler.data = make([]byte, 0)
 	compiler.jumpStack = utils.InitStack[int]()
-	commandParser, _ := InitCommandParser(patterns, ops)
+	commandParser := InitCommandParser(patterns, ops)
 	compiler.parser = InitProgramParser(program, commandParser)
 
 	return compiler

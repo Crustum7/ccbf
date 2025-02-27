@@ -19,15 +19,15 @@ type ParsedCommand struct {
 	Operation *operations.Operation
 }
 
-func InitCommandParser(patterns []string, ops []operations.Operation) (CommandParser, error) {
+func InitCommandParser(patterns []string, ops []operations.Operation) CommandParser {
 	m := make(map[string]operations.Operation)
 	for i := range patterns {
 		pattern := addStartAnchor(patterns[i])
 		m[pattern] = ops[i]
 	}
 
-	reMap, err := utils.InitRegexMap(m)
-	return CommandParser{reMap: reMap}, err
+	reMap := utils.InitRegexMap(m)
+	return CommandParser{reMap: reMap}
 }
 
 func addStartAnchor(str string) string {

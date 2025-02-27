@@ -70,11 +70,7 @@ func TestCommandParser(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(fmt.Sprintf("%v, %s, %s", tc.commands, tc.feed, tc.expectedPattern), func(t *testing.T) {
-			parser, err := compiler.InitCommandParser(tc.commands, make([]operations.Operation, 5))
-
-			if err != nil {
-				t.Fatalf("InitCommandParser should not have thrown error for commands %v", tc.commands)
-			}
+			parser := compiler.InitCommandParser(tc.commands, make([]operations.Operation, 5))
 
 			parsedCommand := parser.FindLongest(tc.feed)
 

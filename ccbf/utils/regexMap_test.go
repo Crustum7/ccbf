@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"martinjonson.com/ccbf/ccbf/test"
 	"martinjonson.com/ccbf/ccbf/utils"
 )
 
@@ -32,7 +33,7 @@ func TestRegexMap(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(fmt.Sprintf("%v", tc.m), func(t *testing.T) {
-			regexMap, _ := utils.InitRegexMap(tc.m)
+			regexMap := utils.InitRegexMap(tc.m)
 			match := regexMap.FindLongestMatchPattern(tc.str)
 
 			if match != tc.expectedPattern {
@@ -70,7 +71,7 @@ func TestRegexMapGetValue(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(fmt.Sprintf("%v", tc.m), func(t *testing.T) {
-			regexMap, _ := utils.InitRegexMap(tc.m)
+			regexMap := utils.InitRegexMap(tc.m)
 			pattern := regexMap.FindLongestMatchPattern(tc.str)
 			val := regexMap.GetValueFromPattern(pattern)
 
@@ -110,11 +111,7 @@ func TestRegexMapIncorrectRegex(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(fmt.Sprintf("%v", tc.m), func(t *testing.T) {
-			_, err := utils.InitRegexMap(tc.m)
-
-			if err == nil {
-				t.Fatalf("Incorrect regex %v should have returned an error", tc.m)
-			}
+			test.ShouldPanic(t, func() { utils.InitRegexMap(tc.m) })
 		})
 	}
 }

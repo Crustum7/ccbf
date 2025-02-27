@@ -10,17 +10,14 @@ type RegexMap[T any] struct {
 	m map[string]T
 }
 
-func InitRegexMap[T any](m map[string]T) (RegexMap[T], error) {
+func InitRegexMap[T any](m map[string]T) RegexMap[T] {
 	reMap := RegexMap[T]{m: make(map[string]T)}
 	for key, val := range m {
-		_, err := regexp.Compile(key)
-		if err != nil {
-			return RegexMap[T]{}, err
-		}
+		regexp.MustCompile(key)
 
 		reMap.m[key] = val
 	}
-	return reMap, nil
+	return reMap
 }
 
 func (reMap RegexMap[T]) FindLongestMatchPattern(str string) string {
