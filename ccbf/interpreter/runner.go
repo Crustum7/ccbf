@@ -81,7 +81,9 @@ func matchInstruction(program *instructions.Program, opCode byte, parameterBytes
 	case operations.Reset:
 		program.Reset()
 	case operations.MoveValueRight:
-		program.MoveValueRight()
+		steps := utils.Btoi(parameterBytes)
+
+		program.MoveValueRight(steps)
 	default:
 		panic(fmt.Sprintf("Interpreter does not handle op code %b", opCode))
 	}

@@ -43,7 +43,7 @@ var operations = []Operation{
 	{pattern: `(<+)`, opCode: byte(MultipleLeftStep), repeated: true, numberOfParameterBytes: 1},
 	{pattern: `\[-\]>`, opCode: byte(ResetAndStep), repeated: false, numberOfParameterBytes: 0},
 	{pattern: `\[-\]`, opCode: byte(Reset), repeated: false, numberOfParameterBytes: 0},
-	// {pattern: `\[->\+<\]`, opCode: byte(MoveValueRight), repeated: false, numberOfParameterBytes: 0},
+	{pattern: `\[-(>+)\+<+\]`, opCode: byte(MoveValueRight), repeated: false, numberOfParameterBytes: 1},
 }
 
 func (operation Operation) GetPattern() string {
