@@ -3,7 +3,6 @@ package operations
 type Operation struct {
 	pattern                string
 	opCode                 byte
-	repeated               bool
 	numberOfParameterBytes int
 }
 
@@ -29,21 +28,21 @@ const (
 )
 
 var operations = []Operation{
-	{pattern: `>`, opCode: byte(OneRightStep), repeated: false, numberOfParameterBytes: 0},
-	{pattern: `<`, opCode: byte(OneLeftStep), repeated: false, numberOfParameterBytes: 0},
-	{pattern: `\+`, opCode: byte(IncrementOne), repeated: false, numberOfParameterBytes: 0},
-	{pattern: `-`, opCode: byte(DecrementOne), repeated: false, numberOfParameterBytes: 0},
-	{pattern: `\.`, opCode: byte(PrintChar), repeated: false, numberOfParameterBytes: 0},
-	{pattern: `,`, opCode: byte(InputChar), repeated: false, numberOfParameterBytes: 0},
-	{pattern: `\[`, opCode: byte(StartLoop), repeated: false, numberOfParameterBytes: 4},
-	{pattern: `\]`, opCode: byte(EndLoop), repeated: false, numberOfParameterBytes: 4},
-	{pattern: `(\++)`, opCode: byte(IncrementMultiple), repeated: true, numberOfParameterBytes: 1},
-	{pattern: `(-+)`, opCode: byte(DecrementMultiple), repeated: true, numberOfParameterBytes: 1},
-	{pattern: `(>+)`, opCode: byte(MultipleRightStep), repeated: true, numberOfParameterBytes: 1},
-	{pattern: `(<+)`, opCode: byte(MultipleLeftStep), repeated: true, numberOfParameterBytes: 1},
-	{pattern: `\[-\]>`, opCode: byte(ResetAndStep), repeated: false, numberOfParameterBytes: 0},
-	{pattern: `\[-\]`, opCode: byte(Reset), repeated: false, numberOfParameterBytes: 0},
-	{pattern: `\[-(>+)\+<+\]`, opCode: byte(MoveValueRight), repeated: false, numberOfParameterBytes: 1},
+	{pattern: `>`, opCode: byte(OneRightStep), numberOfParameterBytes: 0},
+	{pattern: `<`, opCode: byte(OneLeftStep), numberOfParameterBytes: 0},
+	{pattern: `\+`, opCode: byte(IncrementOne), numberOfParameterBytes: 0},
+	{pattern: `-`, opCode: byte(DecrementOne), numberOfParameterBytes: 0},
+	{pattern: `\.`, opCode: byte(PrintChar), numberOfParameterBytes: 0},
+	{pattern: `,`, opCode: byte(InputChar), numberOfParameterBytes: 0},
+	{pattern: `\[`, opCode: byte(StartLoop), numberOfParameterBytes: 4},
+	{pattern: `\]`, opCode: byte(EndLoop), numberOfParameterBytes: 4},
+	{pattern: `(\++)`, opCode: byte(IncrementMultiple), numberOfParameterBytes: 1},
+	{pattern: `(-+)`, opCode: byte(DecrementMultiple), numberOfParameterBytes: 1},
+	{pattern: `(>+)`, opCode: byte(MultipleRightStep), numberOfParameterBytes: 1},
+	{pattern: `(<+)`, opCode: byte(MultipleLeftStep), numberOfParameterBytes: 1},
+	{pattern: `\[-\]>`, opCode: byte(ResetAndStep), numberOfParameterBytes: 0},
+	{pattern: `\[-\]`, opCode: byte(Reset), numberOfParameterBytes: 0},
+	{pattern: `\[-(>+)\+<+\]`, opCode: byte(MoveValueRight), numberOfParameterBytes: 1},
 }
 
 func (operation Operation) GetPattern() string {
