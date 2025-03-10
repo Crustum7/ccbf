@@ -7,7 +7,7 @@ This program is a Brainf*ck interpreter inspired by the [coding challenge](https
 Build the project by running:
 
 ```bash
-go build -o bin/ccbf ./ccbf/cli/interpreter/main.go
+go build -o bin/ccbf main.go
 ```
 
 Then use the interpreter on a `.bf` file like:
@@ -19,7 +19,7 @@ Then use the interpreter on a `.bf` file like:
 Or run directly without building:
 
 ```bash
-go run ./ccbf/cli/interpreter/main.go examples/mandelbrot.bf
+go run main.go examples/mandelbrot.bf
 ```
 
 ## Bytecode instructions

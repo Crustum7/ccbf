@@ -3,7 +3,7 @@ package interpreter_test
 import (
 	"os"
 
-	"martinjonson.com/ccbf/ccbf/interpreter"
+	"martinjonson.com/ccbf/internal/interpreter"
 )
 
 func ExampleRunBytecode() {

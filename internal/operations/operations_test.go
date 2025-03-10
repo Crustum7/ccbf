@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"martinjonson.com/ccbf/ccbf/operations"
+	"martinjonson.com/ccbf/internal/operations"
 )
 
 func TestObjectMethods(t *testing.T) {

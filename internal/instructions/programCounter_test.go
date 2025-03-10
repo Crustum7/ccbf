@@ -3,7 +3,7 @@ package instructions_test
 import (
 	"testing"
 
-	"martinjonson.com/ccbf/ccbf/instructions"
+	"martinjonson.com/ccbf/internal/instructions"
 )
 
 func TestProgramCounterInitialValue(t *testing.T) {

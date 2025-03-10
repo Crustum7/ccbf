@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"martinjonson.com/ccbf/ccbf/test"
-	"martinjonson.com/ccbf/ccbf/utils"
+	"martinjonson.com/ccbf/internal/test"
+	"martinjonson.com/ccbf/internal/utils"
 )
 
 func TestRegexMap(t *testing.T) {

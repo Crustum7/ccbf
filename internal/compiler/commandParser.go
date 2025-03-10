@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"martinjonson.com/ccbf/ccbf/operations"
-	"martinjonson.com/ccbf/ccbf/utils"
+	"martinjonson.com/ccbf/internal/operations"
+	"martinjonson.com/ccbf/internal/utils"
 )
 
 type CommandParser struct {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"martinjonson.com/ccbf/ccbf/compiler"
-	"martinjonson.com/ccbf/ccbf/operations"
+	"martinjonson.com/ccbf/internal/compiler"
+	"martinjonson.com/ccbf/internal/operations"
 )
 
 func TestCommandParser(t *testing.T) {

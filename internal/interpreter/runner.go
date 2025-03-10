@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 
-	"martinjonson.com/ccbf/ccbf/instructions"
-	"martinjonson.com/ccbf/ccbf/operations"
-	"martinjonson.com/ccbf/ccbf/utils"
+	"martinjonson.com/ccbf/internal/instructions"
+	"martinjonson.com/ccbf/internal/operations"
+	"martinjonson.com/ccbf/internal/utils"
 )
 
 func RunBytecode(bytes []byte, reader io.Reader, writer io.Writer) {

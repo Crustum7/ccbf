@@ -3,8 +3,8 @@ package compiler
 import (
 	"slices"
 
-	"martinjonson.com/ccbf/ccbf/operations"
-	"martinjonson.com/ccbf/ccbf/utils"
+	"martinjonson.com/ccbf/internal/operations"
+	"martinjonson.com/ccbf/internal/utils"
 )
 
 type Compiler struct {

@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"martinjonson.com/ccbf/ccbf/compiler"
-	"martinjonson.com/ccbf/ccbf/interpreter"
+	"martinjonson.com/ccbf/internal/compiler"
+	"martinjonson.com/ccbf/internal/interpreter"
 )
 
 func main() {
